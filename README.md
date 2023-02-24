@@ -33,6 +33,7 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`genstuff gen [COMPONENTNAME]`](#genstuff-gen-componentname)
 * [`genstuff help [COMMANDS]`](#genstuff-help-commands)
 * [`genstuff plugins`](#genstuff-plugins)
 * [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin)
@@ -43,6 +44,32 @@ USAGE
 * [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-1)
 * [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-2)
 * [`genstuff plugins update`](#genstuff-plugins-update)
+
+## `genstuff gen [COMPONENTNAME]`
+
+describe the command here
+
+```
+USAGE
+  $ genstuff gen [COMPONENTNAME] [-p <value>] [-s] [-D] [-f <value>]
+
+ARGUMENTS
+  COMPONENTNAME  file to read
+
+FLAGS
+  -D, --default
+  -f, --folder=<value>  [default: ui]
+  -p, --props=<value>
+  -s, --stories
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ genstuff gen
+```
+
+_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.3/dist/commands/gen.ts)_
 
 ## `genstuff help [COMMANDS]`
 

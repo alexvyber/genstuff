@@ -9,86 +9,67 @@ oclif example Hello World CLI
 [![License](https://img.shields.io/npm/l/oclif-hello-world.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
 
 <!-- toc -->
-
-- [oclif-hello-world](#oclif-hello-world)
-- [Usage](#usage)
-- [Commands](#commands)
+* [oclif-hello-world](#oclif-hello-world)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g genstuff
 $ genstuff COMMAND
 running command...
 $ genstuff (--version)
-genstuff/0.0.0-alpha.0 linux-x64 node-v18.13.0
+genstuff/0.0.0-alpha.1 linux-x64 node-v18.14.0
 $ genstuff --help [COMMAND]
 USAGE
   $ genstuff COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
+* [`genstuff gen [COMPONENTNAME]`](#genstuff-gen-componentname)
+* [`genstuff help [COMMANDS]`](#genstuff-help-commands)
+* [`genstuff plugins`](#genstuff-plugins)
+* [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin)
+* [`genstuff plugins:inspect PLUGIN...`](#genstuff-pluginsinspect-plugin)
+* [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin-1)
+* [`genstuff plugins:link PLUGIN`](#genstuff-pluginslink-plugin)
+* [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin)
+* [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-1)
+* [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-2)
+* [`genstuff plugins update`](#genstuff-plugins-update)
 
-- [`genstuff hello PERSON`](#genstuff-hello-person)
-- [`genstuff hello world`](#genstuff-hello-world)
-- [`genstuff help [COMMANDS]`](#genstuff-help-commands)
-- [`genstuff plugins`](#genstuff-plugins)
-- [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin)
-- [`genstuff plugins:inspect PLUGIN...`](#genstuff-pluginsinspect-plugin)
-- [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin-1)
-- [`genstuff plugins:link PLUGIN`](#genstuff-pluginslink-plugin)
-- [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin)
-- [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-1)
-- [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-2)
-- [`genstuff plugins update`](#genstuff-plugins-update)
+## `genstuff gen [COMPONENTNAME]`
 
-## `genstuff hello PERSON`
-
-Say hello
+describe the command here
 
 ```
 USAGE
-  $ genstuff hello PERSON -f <value>
+  $ genstuff gen [COMPONENTNAME] [-w <value>] [-p <value>] [-s] [-D]
 
 ARGUMENTS
-  PERSON  Person to say hello to
+  COMPONENTNAME  file to read
 
 FLAGS
-  -f, --from=<value>  (required) Who is saying hello
+  -D, --default
+  -p, --props=<value>
+  -s, --stories
+  -w, --where=<value>
 
 DESCRIPTION
-  Say hello
+  describe the command here
 
 EXAMPLES
-  $ oex hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
+  $ genstuff gen
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.0/dist/commands/hello/index.ts)_
-
-## `genstuff hello world`
-
-Say hello world
-
-```
-USAGE
-  $ genstuff hello world
-
-DESCRIPTION
-  Say hello world
-
-EXAMPLES
-  $ genstuff hello world
-  hello world! (./src/commands/hello/world.ts)
-```
+_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.1/dist/commands/gen.ts)_
 
 ## `genstuff help [COMMANDS]`
 
@@ -161,7 +142,7 @@ ALIASES
   $ genstuff plugins add
 
 EXAMPLES
-  $ genstuff plugins:install myplugin
+  $ genstuff plugins:install myplugin 
 
   $ genstuff plugins:install https://github.com/someuser/someplugin
 
@@ -224,7 +205,7 @@ ALIASES
   $ genstuff plugins add
 
 EXAMPLES
-  $ genstuff plugins:install myplugin
+  $ genstuff plugins:install myplugin 
 
   $ genstuff plugins:install https://github.com/someuser/someplugin
 
@@ -342,5 +323,4 @@ FLAGS
 DESCRIPTION
   Update installed plugins.
 ```
-
 <!-- commandsstop -->

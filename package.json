@@ -1,6 +1,6 @@
 {
   "name": "genstuff",
-  "version": "0.0.0-alpha.0",
+  "version": "0.0.0-alpha.1",
   "description": "Generate best React components ever",
   "keywords": [
     "oclif"
@@ -37,7 +37,7 @@
     "@oclif/test": "^2.3.6",
     "@types/chai": "^4",
     "@types/node": "^16.18.12",
-    "oclif": "^3",
+    "oclif": "^3.7.0",
     "shx": "^0.3.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",

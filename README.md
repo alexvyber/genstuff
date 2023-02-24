@@ -1,5 +1,4 @@
-oclif-hello-world
-=================
+# oclif-hello-world
 
 oclif example Hello World CLI
 
@@ -10,24 +9,29 @@ oclif example Hello World CLI
 [![License](https://img.shields.io/npm/l/oclif-hello-world.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
 
 <!-- toc -->
+* [oclif-hello-world](#oclif-hello-world)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
 ```sh-session
 $ npm install -g genstuff
 $ genstuff COMMAND
 running command...
 $ genstuff (--version)
-genstuff/0.0.0 linux-x64 node-v18.13.0
+genstuff/0.0.0-alpha.0 linux-x64 node-v18.13.0
 $ genstuff --help [COMMAND]
 USAGE
   $ genstuff COMMAND
 ...
 ```
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
 * [`genstuff hello PERSON`](#genstuff-hello-person)
 * [`genstuff hello world`](#genstuff-hello-world)
@@ -64,7 +68,7 @@ EXAMPLES
   hello friend from oclif! (./src/commands/hello/index.ts)
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0/dist/commands/hello/index.ts)_
+_See code: [dist/commands/hello/index.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.0/dist/commands/hello/index.ts)_
 
 ## `genstuff hello world`
 

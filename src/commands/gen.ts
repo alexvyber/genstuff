@@ -1,25 +1,25 @@
 import { Args, Command, Flags } from "@oclif/core"
 import { Component } from "../lib/component"
-
 import fs = require("node:fs")
 import { writeFile } from "node:fs/promises"
 import { exec } from "node:child_process"
 import { Stories } from "../lib/stories"
 
 const configs = {
-  defaultFolder: "components",
-}
+  ui: "src/components/ui",
+  common: "src/components/common",
+  views: "src/components/views",
+} as const
 
 export default class Gen extends Command {
   static description = "describe the command here"
-
   static examples = ["<%= config.bin %> <%= command.id %>"]
 
   static flags = {
-    where: Flags.string({ char: "w" }),
     props: Flags.string({ char: "p" }),
     stories: Flags.boolean({ char: "s" }),
     default: Flags.boolean({ char: "D" }),
+    folder: Flags.string({ char: "f", default: "ui" }),
   }
 
   static args = {
@@ -32,7 +32,11 @@ export default class Gen extends Command {
     if (!args.componentName) throw new Error("Must be component name")
 
     const component = args.componentName
-    const writePath = flags.where || configs.defaultFolder
+
+    let writePath
+
+    assertPath(flags.folder)
+    writePath = configs[flags.folder]
 
     if (!fs.existsSync(writePath)) {
       fs.mkdirSync(writePath)
@@ -50,7 +54,9 @@ export default class Gen extends Command {
     // file's content
     const componentContent = Component.getComponent(component, flags.props)
     const indexContent = Component.getIndex(component, flags.default)
-    const storiesContent = flags.stories ? Stories.getStories(component) : null
+    const storiesContent = flags.stories
+      ? Stories.getStories(component, flags.props)
+      : null
 
     // write content to the files
     await Promise.all([
@@ -69,11 +75,10 @@ export default class Gen extends Command {
     ])
 
     // format written files
-    exec("prettier --write " + `${writePath}/${component}/index.ts`)
-    exec("prettier --write " + `${writePath}/${component}/${component}.tsx`)
-    exec(
-      "prettier --write " +
-        `${writePath}/${component}/${component}.stories.tsx`,
-    )
+    exec("prettier --write " + `${writePath}/${component}/*`)
   }
+}
+
+function assertPath(path: string): asserts path is keyof typeof configs {
+  if (!(path in configs)) throw new Error("path error")
 }

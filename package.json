@@ -27,7 +27,8 @@
     "lint": "eslint . --ext .ts --config .eslintrc.js",
     "prepack": "yarn build && oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "publish": "yarn prepack && npm publish && yarn postpack"
   },
   "dependencies": {
     "@oclif/core": "^2",

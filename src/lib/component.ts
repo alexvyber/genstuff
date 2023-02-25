@@ -69,7 +69,13 @@ export class Component {
       .replace(/\?/g, "")
       .trim()
       .split(" ")
-      .map(item => item.split(":")[0])
+      .map(item => {
+        if (item.includes("=")) {
+          return item.split(":")[0] + "=" + item.split("=")[1]
+        }
+
+        return item.split(":")[0]
+      })
       .join(",\n")
   }
 
@@ -93,7 +99,17 @@ export class Component {
         if (key === "") throw new Error("key error")
         if (propType === "") throw new Error("propType error")
 
-        return `${key}: ${propType}`
+        let propType_: string
+
+        if (propType.includes("=")) {
+          propType_ = propType.split(":")[0].split("=")[0]
+          console.log("🚀 1~ Component ~ getPropTypes ~ propType_:", propType_)
+        } else {
+          propType_ = propType.split(":")[0]
+          console.log("🚀 2~ Component ~ getPropTypes ~ propType_:", propType_)
+        }
+
+        return `${key}: ${propType_}`
       })
       .join("\n")
   }

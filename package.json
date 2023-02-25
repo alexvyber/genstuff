@@ -23,6 +23,7 @@
   ],
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
+    "clean": "shx rm -rf src/components",
     "lint": "eslint . --ext .ts --config .eslintrc.js",
     "prepack": "yarn build && oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",

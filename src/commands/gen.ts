@@ -43,41 +43,58 @@ export default class Gen extends Command {
 
     if (flags.extend) {
       if (flags.extend === args.componentName) throw new Error("Components have the same name")
-
       if (!fs.existsSync(`${writePath}/${flags.extend}/${flags.extend}.tsx`))
         throw new Error("Component doesn't exist")
 
-      Promise.all([
-        writeFiles({
-          writePath,
-          componentFolder: flags.extend,
-          componentName: component,
-          props: flags.props,
-          stories: flags.stories,
-          defaultExport: flags.defaultExport,
-          extend: true,
-        }),
+      try {
+        await Promise.all([
+          await writeComponent({
+            writePath,
+            componentFolder: flags.extend,
+            componentName: component,
+            props: flags.props,
+            extend: true,
+          }),
 
-        await writeIndex({
-          writePath,
-          componentFolder: flags.extend,
-          componentName: component,
-          append: true,
-        }),
-      ])
+          flags.stories &&
+            writeStories({
+              writePath,
+              componentFolder: flags.extend,
+              componentName: component,
+              props: flags.props,
+            }),
+
+          await writeIndex({
+            writePath,
+            componentFolder: flags.extend,
+            componentName: component,
+            append: true,
+          }),
+        ])
+        console.log("Files saved")
+      } catch (error: any) {
+        if ("message" in error) throw new Error(error.message)
+        throw new Error("Error")
+      }
     } else {
       if (fs.existsSync(`${writePath}/${component}`)) throw new Error("Component Exist")
       fs.mkdirSync(`${writePath}/${component}`)
 
       Promise.all([
-        writeFiles({
+        await writeComponent({
           writePath,
           componentFolder: component,
           componentName: component,
           props: flags.props,
-          stories: flags.stories,
-          defaultExport: flags.defaultExport,
         }),
+
+        flags.stories &&
+          writeStories({
+            writePath,
+            componentFolder: component,
+            componentName: component,
+            props: flags.props,
+          }),
 
         await writeIndex({
           writePath,
@@ -92,49 +109,42 @@ export default class Gen extends Command {
   }
 }
 
-async function writeFiles({
+async function writeStories({
   writePath,
   componentFolder,
   componentName,
   props,
-  stories,
-  extend = false,
-  defaultExport: _ = false,
 }: {
   writePath: string
   componentFolder: string
   componentName: string
   props: string | undefined
-  stories: boolean | undefined
-  extend?: boolean | undefined
-  defaultExport: boolean
-}) {
-  // paths
-  const componentPath = `${writePath}/${componentFolder}/${componentName}.tsx`
-  // const indexPath = `${writePath}/${componentFolder}/index.ts`
+}): Promise<void> {
   const storiesPath = `${writePath}/${componentFolder}/${componentName}.stories.tsx`
+  const storiesContent = Stories.getStories(componentName, props)
 
-  if (fs.existsSync(componentPath)) throw new Error("Component Exist")
-  if (fs.existsSync(storiesPath)) throw new Error("Stories Exist")
+  return write(storiesPath, storiesContent)
+}
 
-  // file's content
+async function writeComponent({
+  writePath,
+  componentFolder,
+  componentName,
+  props,
+  extend = false,
+}: {
+  writePath: string
+  componentFolder: string
+  componentName: string
+  props: string | undefined
+  extend?: boolean | undefined
+}): Promise<void> {
+  const componentPath = `${writePath}/${componentFolder}/${componentName}.tsx`
   const componentContent = extend
     ? Component.getExtendingComponent(componentFolder, componentName, props)
     : Component.getComponent(componentName, props)
-  // const indexContent = Component.getIndex(componentName, defaultExport)
-  const storiesContent = stories ? Stories.getStories(componentName, props) : null
 
-  // write content to the files
-  await Promise.all([
-    await writeFile(componentPath, componentContent, {
-      mode: 0o644,
-    }),
-
-    storiesContent &&
-      (await writeFile(storiesPath, storiesContent, {
-        mode: 0o644,
-      })),
-  ])
+  return write(componentPath, componentContent)
 }
 
 async function writeIndex({
@@ -149,20 +159,29 @@ async function writeIndex({
   componentName: string
   append?: boolean
   defaultExport?: boolean
-}) {
+}): Promise<void> {
   const indexPath = `${writePath}/${componentFolder}/index.ts`
 
   if (append) {
     const indexContent = fs.readFileSync(indexPath, "utf8")
     const newIndexContent = indexContent + Component.getIndex(componentName, defaultExport)
 
-    return await writeFile(indexPath, newIndexContent, {
-      mode: 0o644,
-    })
+    return await write(indexPath, newIndexContent, true)
   }
 
   const indexContent = Component.getIndex(componentName, defaultExport)
-  return await writeFile(indexPath, indexContent, {
+  return await write(indexPath, indexContent)
+}
+
+async function write(path: string, content: string, override: boolean = false) {
+  if (override)
+    return await writeFile(path, content, {
+      mode: 0o644,
+    })
+
+  if (fs.existsSync(path)) throw new Error(`${path} exist`)
+
+  return await writeFile(path, content, {
     mode: 0o644,
   })
 }

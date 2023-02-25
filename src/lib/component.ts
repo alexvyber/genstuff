@@ -9,7 +9,7 @@ export class Component {
     const content = `
     export type Props = ${props ? this.getTypedProps(props) : "{}"}
     
-    export const ${componentName} = (${props ? this.getDestructuredProps(props) : "{}"}: Props) => {
+    export const ${componentName} = ({${props ? this.getDestructuredProps(props) : ""}}: Props) => {
       return(
         <></>
         )
@@ -24,14 +24,15 @@ export class Component {
     componentName: string,
     props?: string | undefined,
   ): string {
-    const basePropsName = downCaseFirst(baseComponentName) + "Props"
+    const basePropsName = baseComponentName + "Props"
 
     const content = `
     import { Props as ${basePropsName} } from "./${baseComponentName}"
 
     export type Props = ${props ? this.getTypedProps(props) + `& ${basePropsName}` : basePropsName}
     
-    export const ${componentName} = (${props ? this.getDestructuredProps(props) : "{}"}: Props) => {
+    export const ${componentName} = ({
+      ${props ? this.getDestructuredProps(props) + ", ...rest" : ""}}: Props) => {
       return(
         <></>
         )
@@ -44,13 +45,13 @@ export class Component {
   private static getDestructuredProps(propsStr: string): string {
     const [props, unknownProps] = propsStr.replace(/\s+/g, " ").trim().split(",")
 
-    return `{${props ? this.getProp(props) : ""}
+    return `${props ? this.getProp(props) : ""}
           ${
             unknownProps
               ? unknownProps.replace(/\?/g, "").replace(/\s+/g, " ").split(" ").join(",\n")
               : ""
           }
-      }`
+      `
   }
 
   private static getTypedProps(propsStr: string): string {

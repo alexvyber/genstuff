@@ -1,8 +1,5 @@
 export class Stories {
-  public static getStories(
-    componentName: string,
-    props?: string | undefined,
-  ): string {
+  public static getStories(componentName: string, props?: string | undefined): string {
     const content = `
     import { ${componentName} } from "."
     
@@ -49,16 +46,7 @@ export class Stories {
 const arrows = ["()=>", "(any)=>"] as const
 type Arrow = (typeof arrows)[number]
 
-type Types =
-  | "string"
-  | "number"
-  | "object"
-  | "boolean"
-  | "{}"
-  | "[]"
-  | "any"
-  | "never"
-  | "void"
+type Types = "string" | "number" | "object" | "boolean" | "{}" | "[]" | "any" | "never" | "void"
 
 type FuncType = `${Arrow}${Types}`
 

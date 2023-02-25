@@ -18,65 +18,153 @@ export default class Gen extends Command {
   static flags = {
     props: Flags.string({ char: "p" }),
     stories: Flags.boolean({ char: "s" }),
-    default: Flags.boolean({ char: "D" }),
+    defaultExport: Flags.boolean({ char: "D" }),
     folder: Flags.string({ char: "f", default: "ui" }),
+    extend: Flags.string({ char: "e" }),
   }
 
   static args = {
     componentName: Args.string({ description: "file to read" }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<void | void[]> {
     const { args, flags } = await this.parse(Gen)
 
     if (!args.componentName) throw new Error("Must be component name")
 
     const component = args.componentName
 
-    let writePath
-
     assertPath(flags.folder)
-    writePath = configs[flags.folder]
+    const writePath = configs[flags.folder]
 
     if (!fs.existsSync(writePath)) {
       fs.mkdirSync(writePath)
     }
 
-    if (!fs.existsSync(`${writePath}/${component}`)) {
+    if (flags.extend) {
+      if (flags.extend === args.componentName) throw new Error("Components have the same name")
+
+      if (!fs.existsSync(`${writePath}/${flags.extend}/${flags.extend}.tsx`))
+        throw new Error("Component doesn't exist")
+
+      Promise.all([
+        writeFiles({
+          writePath,
+          componentFolder: flags.extend,
+          componentName: component,
+          props: flags.props,
+          stories: flags.stories,
+          defaultExport: flags.defaultExport,
+          extend: true,
+        }),
+
+        await writeIndex({
+          writePath,
+          componentFolder: flags.extend,
+          componentName: component,
+          append: true,
+        }),
+      ])
+    } else {
+      if (fs.existsSync(`${writePath}/${component}`)) throw new Error("Component Exist")
       fs.mkdirSync(`${writePath}/${component}`)
+
+      Promise.all([
+        writeFiles({
+          writePath,
+          componentFolder: component,
+          componentName: component,
+          props: flags.props,
+          stories: flags.stories,
+          defaultExport: flags.defaultExport,
+        }),
+
+        await writeIndex({
+          writePath,
+          componentFolder: component,
+          componentName: component,
+        }),
+      ])
     }
 
-    // paths
-    const componentPath = `${writePath}/${component}/${component}.tsx`
-    const indexPath = `${writePath}/${component}/index.ts`
-    const storiesPath = `${writePath}/${component}/${component}.stories.tsx`
-
-    // file's content
-    const componentContent = Component.getComponent(component, flags.props)
-    const indexContent = Component.getIndex(component, flags.default)
-    const storiesContent = flags.stories
-      ? Stories.getStories(component, flags.props)
-      : null
-
-    // write content to the files
-    await Promise.all([
-      await writeFile(componentPath, componentContent, {
-        mode: 0o644,
-      }),
-
-      await writeFile(indexPath, indexContent, {
-        mode: 0o644,
-      }),
-
-      storiesContent &&
-        (await writeFile(storiesPath, storiesContent, {
-          mode: 0o644,
-        })),
-    ])
-
     // format written files
-    exec("prettier --write " + `${writePath}/${component}/*`)
+    exec("prettier --write " + `${writePath}/${flags.extend || args.componentName}/*`)
   }
+}
+
+async function writeFiles({
+  writePath,
+  componentFolder,
+  componentName,
+  props,
+  stories,
+  extend = false,
+  defaultExport: _ = false,
+}: {
+  writePath: string
+  componentFolder: string
+  componentName: string
+  props: string | undefined
+  stories: boolean | undefined
+  extend?: boolean | undefined
+  defaultExport: boolean
+}) {
+  // paths
+  const componentPath = `${writePath}/${componentFolder}/${componentName}.tsx`
+  // const indexPath = `${writePath}/${componentFolder}/index.ts`
+  const storiesPath = `${writePath}/${componentFolder}/${componentName}.stories.tsx`
+
+  if (fs.existsSync(componentPath)) throw new Error("Component Exist")
+  if (fs.existsSync(storiesPath)) throw new Error("Stories Exist")
+
+  // file's content
+  const componentContent = extend
+    ? Component.getExtendingComponent(componentFolder, componentName, props)
+    : Component.getComponent(componentName, props)
+  // const indexContent = Component.getIndex(componentName, defaultExport)
+  const storiesContent = stories ? Stories.getStories(componentName, props) : null
+
+  // write content to the files
+  await Promise.all([
+    await writeFile(componentPath, componentContent, {
+      mode: 0o644,
+    }),
+
+    storiesContent &&
+      (await writeFile(storiesPath, storiesContent, {
+        mode: 0o644,
+      })),
+  ])
+}
+
+async function writeIndex({
+  writePath,
+  componentFolder,
+  componentName,
+  append = false,
+  defaultExport = false,
+}: {
+  writePath: string
+  componentFolder: string
+  componentName: string
+  append?: boolean
+  defaultExport?: boolean
+}) {
+  const indexPath = `${writePath}/${componentFolder}/index.ts`
+
+  if (append) {
+    const indexContent = fs.readFileSync(indexPath, "utf8")
+    const newIndexContent = indexContent + Component.getIndex(componentName, defaultExport)
+
+    return await writeFile(indexPath, newIndexContent, {
+      mode: 0o644,
+    })
+  }
+
+  const indexContent = Component.getIndex(componentName, defaultExport)
+  return await writeFile(indexPath, indexContent, {
+    mode: 0o644,
+  })
 }
 
 function assertPath(path: string): asserts path is keyof typeof configs {

@@ -22,7 +22,7 @@ $ npm install -g genstuff
 $ genstuff COMMAND
 running command...
 $ genstuff (--version)
-genstuff/0.0.0-alpha.7 linux-x64 node-v18.14.2
+genstuff/0.0.0-alpha.6 linux-x64 node-v18.14.2
 $ genstuff --help [COMMAND]
 USAGE
   $ genstuff COMMAND
@@ -51,7 +51,7 @@ describe the command here
 
 ```
 USAGE
-  $ genstuff gen [COMPONENTNAME] [-p <value>] [-s] [-D] [-f <value>] [-e <value>]
+  $ genstuff gen [COMPONENTNAME] [-p <value>] [-s] [-D] [-p <value>] [-e <value>] [-x <value>]
 
 ARGUMENTS
   COMPONENTNAME  file to read
@@ -59,9 +59,10 @@ ARGUMENTS
 FLAGS
   -D, --defaultExport
   -e, --extend=<value>
-  -f, --folder=<value>  [default: ui]
+  -p, --path=<value>    [default: ui]
   -p, --props=<value>
   -s, --stories
+  -x, --cvax=<value>
 
 DESCRIPTION
   describe the command here
@@ -70,7 +71,7 @@ EXAMPLES
   $ genstuff gen
 ```
 
-_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.7/dist/commands/gen.ts)_
+_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.6/dist/commands/gen.ts)_
 
 ## `genstuff help [COMMANDS]`
 

@@ -6,6 +6,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
     "target": "es2019"
   },
   "include": ["src/**/*"]

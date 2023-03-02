@@ -1,10 +1,11 @@
 export class Stories {
   public static getStories(componentName: string, props?: string | undefined): string {
     const content = `
-    import { ${componentName} } from "."
+    import React from 'react'
+    import { ${componentName} } from "./${componentName}"
     
     import type { Story } from "@ladle/react"
-    import type { Props } from "./${componentName}"
+    import type { ${componentName}Props as Props } from "./${componentName}"
     
     export default {
       title: "${componentName}/Default"
@@ -44,7 +45,7 @@ export class Stories {
 }
 
 const arrows = ["()=>", "(any)=>"] as const
-type Arrow = (typeof arrows)[number]
+type Arrow = typeof arrows[number]
 
 type Types = "string" | "number" | "object" | "boolean" | "{}" | "[]" | "any" | "never" | "void"
 

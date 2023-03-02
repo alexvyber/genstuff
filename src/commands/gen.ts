@@ -19,8 +19,10 @@ export default class Gen extends Command {
     props: Flags.string({ char: "p" }),
     stories: Flags.boolean({ char: "s" }),
     defaultExport: Flags.boolean({ char: "D" }),
-    folder: Flags.string({ char: "f", default: "ui" }),
+    path: Flags.string({ char: "p", default: "ui" }),
     extend: Flags.string({ char: "e" }),
+    // force: Flags.boolean({ char: "f", default: false }),
+    cvax: Flags.string({ char: "x" }),
   }
 
   static args = {
@@ -34,8 +36,8 @@ export default class Gen extends Command {
 
     const component = args.componentName
 
-    assertPath(flags.folder)
-    const writePath = configs[flags.folder]
+    assertPath(flags.path)
+    const writePath = configs[flags.path]
 
     if (!fs.existsSync(writePath)) {
       fs.mkdirSync(writePath)
@@ -86,6 +88,7 @@ export default class Gen extends Command {
           componentFolder: component,
           componentName: component,
           props: flags.props,
+          cvax: flags.cvax,
         }),
 
         flags.stories &&
@@ -132,17 +135,21 @@ async function writeComponent({
   componentName,
   props,
   extend = false,
+  cvax,
 }: {
   writePath: string
   componentFolder: string
   componentName: string
-  props: string | undefined
-  extend?: boolean | undefined
+  props?: string
+  extend?: boolean
+  cvax?: string
 }): Promise<void> {
   const componentPath = `${writePath}/${componentFolder}/${componentName}.tsx`
-  const componentContent = extend
-    ? Component.getExtendingComponent(componentFolder, componentName, props)
-    : Component.getComponent(componentName, props)
+  // const componentContent = extend
+  //   ? Component.getExtendingComponent({ componentFolder, componentName, props, cvax })
+  //   : Component.getComponent({ componentName, props, cvax })
+
+  const componentContent = Component.getComponent({ componentName, props, cvax })
 
   return write(componentPath, componentContent)
 }

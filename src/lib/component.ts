@@ -71,7 +71,7 @@ export class Component {
 
     // console.log("🚀 ~ Component ~ content:", content)
 
-    const exports = `export { ${componentName}, Props as ${componentName}Props }`
+    const exports = `export { ${componentName}, type Props as ${componentName}Props }`
 
     const res = [imports, content, exports].join("\n\n")
 

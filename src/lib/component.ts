@@ -34,9 +34,7 @@ export class Component {
     let componentPropsType = ""
     if (cvaxConfig) {
       componentPropsType = `
-      type Props = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof ${downCaseFirst(
-        componentName,
-      )}Variants> & {
+      type Props = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof variants> & {
         ${declaredTypes.join("\n")}
         ${unknownTypes.join("\n")}
       }
@@ -58,20 +56,20 @@ export class Component {
       return(
         <div
         ref={ref}
-        ${
-          cvaxConfig
-            ? `className={${downCaseFirst(componentName)}Variants({ ${cvaxConfig.props.join(
-                ",",
-              )} })}`
-            : ""
-        }
+        ${cvaxConfig ? `className={variants({ ${cvaxConfig.props.join(",")} })}` : ""}
          {...props} />
         )
       })`
 
     // console.log("🚀 ~ Component ~ content:", content)
 
-    const exports = `export { ${componentName}, type Props as ${componentName}Props }`
+    const exports = `export { 
+      ${componentName}, 
+      config as ${downCaseFirst(componentName)}Config,
+      variants as ${downCaseFirst(componentName)}Variants,
+      type Props as ${componentName}Props 
+    }
+    `
 
     const res = [imports, content, exports].join("\n\n")
 
@@ -202,13 +200,12 @@ function getCvaxConfig(cvax: string, componentName: string) {
 
   return {
     template: `
-    const ${downCaseFirst(componentName)}Config = {
+    const config = {
       variants: ${JSON.stringify(Object.fromEntries(arrOfProps))},
-  
       defaultVariants: {}
     } as const
     
-    const ${downCaseFirst(componentName)}Variants = cvax("",${downCaseFirst(componentName)}Config)
+    const variants = cvax("", config)
     `,
     props: propsTypesSplitted.map(item => item.variantName),
   }

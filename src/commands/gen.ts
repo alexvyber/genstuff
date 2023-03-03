@@ -8,6 +8,7 @@ import { Stories } from "../lib/stories"
 const configs = {
   ui: "src/components/ui",
   common: "src/components/common",
+  templates: "src/components/templates",
   views: "src/components/views",
 } as const
 
@@ -19,7 +20,7 @@ export default class Gen extends Command {
     props: Flags.string({ char: "p" }),
     stories: Flags.boolean({ char: "s" }),
     defaultExport: Flags.boolean({ char: "D" }),
-    path: Flags.string({ char: "p", default: "ui" }),
+    path: Flags.string({ default: "ui" }),
     extend: Flags.string({ char: "e" }),
     // force: Flags.boolean({ char: "f", default: false }),
     cvax: Flags.string({ char: "x" }),

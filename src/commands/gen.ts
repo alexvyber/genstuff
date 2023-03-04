@@ -25,6 +25,8 @@ export default class Gen extends Command {
     // force: Flags.boolean({ char: "f", default: false }),
     cvax: Flags.string({ char: 'x' }),
     displayName: Flags.string(),
+    ref: Flags.boolean(),
+    asFunc: Flags.boolean({ default: false }),
   }
 
   static args = {
@@ -38,14 +40,20 @@ export default class Gen extends Command {
     const component = new Component({
       componentName: args.componentName,
       props: flags.props,
+      cvax: flags.cvax,
+      ref: flags.ref,
+      asFunc: flags.asFunc,
     }) //.getComponent({ componentName, props, cvax })
 
-    if (flags.displayName) component.setDisplayName(flags.displayName)
+    // if (flags.displayName) component.setDisplayName(flags.displayName)
 
-    // component.getTypedProps(flags.props)
-    component.printShit({
-      parsedProps: true,
-    })
+    // component.printShit({
+    //   parsedProps: true,
+    // })
+
+    console.log('🚀 ~ Gen ~ run ~ component.content:', component.content)
+    // console.log('🚀 ~ Gen ~ run ~ component.parsedProps.typed:', component.parsedProps.typed)
+    // console.log('🚀 ~ Gen ~ run ~ component.parsedProps.cvax:', component.parsedProps.cvax)
   }
 }
 

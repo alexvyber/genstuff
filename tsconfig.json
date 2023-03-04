@@ -8,7 +8,7 @@
     "strict": true,
     "esModuleInterop": true,
     "jsx": "preserve",
-    "target": "es2019"
+    "target": "es2021"
   },
   "include": ["src/**/*"]
 }

@@ -35,12 +35,16 @@ export default class Gen extends Command {
     const { args, flags } = await this.parse(Gen)
     if (!args.componentName) throw new Error('Must be component name')
 
-    const component = new Component(args.componentName) //.getComponent({ componentName, props, cvax })
+    const component = new Component({
+      componentName: args.componentName,
+      props: flags.props,
+    }) //.getComponent({ componentName, props, cvax })
 
     if (flags.displayName) component.setDisplayName(flags.displayName)
 
+    // component.getTypedProps(flags.props)
     component.printShit({
-      exports: true,
+      parsedProps: true,
     })
   }
 }
@@ -129,87 +133,87 @@ export default class Gen extends Command {
 
 */
 
-async function writeStories({
-  writePath,
-  componentFolder,
-  componentName,
-  props,
-}: {
-  writePath: string
-  componentFolder: string
-  componentName: string
-  props: string | undefined
-}): Promise<void> {
-  const storiesPath = `${writePath}/${componentFolder}/${componentName}.stories.tsx`
-  const storiesContent = Stories.getStories(componentName, props)
+// async function writeStories({
+//   writePath,
+//   componentFolder,
+//   componentName,
+//   props,
+// }: {
+//   writePath: string
+//   componentFolder: string
+//   componentName: string
+//   props: string | undefined
+// }): Promise<void> {
+//   const storiesPath = `${writePath}/${componentFolder}/${componentName}.stories.tsx`
+//   const storiesContent = Stories.getStories(componentName, props)
 
-  return write(storiesPath, storiesContent)
-}
+//   return write(storiesPath, storiesContent)
+// }
 
-async function writeComponent({
-  writePath,
-  componentFolder,
-  componentName,
-  props,
-  extend = false,
-  cvax,
-}: {
-  writePath: string
-  componentFolder: string
-  componentName: string
-  props?: string
-  extend?: boolean
-  cvax?: string
-}): Promise<void> {
-  const componentPath = `${writePath}/${componentFolder}/${componentName}.tsx`
-  // const componentContent = extend
-  //   ? Component.getExtendingComponent({ componentFolder, componentName, props, cvax })
-  //   : Component.getComponent({ componentName, props, cvax })
+// async function writeComponent({
+//   writePath,
+//   componentFolder,
+//   componentName,
+//   props,
+//   extend = false,
+//   cvax,
+// }: {
+//   writePath: string
+//   componentFolder: string
+//   componentName: string
+//   props?: string
+//   extend?: boolean
+//   cvax?: string
+// }): Promise<void> {
+//   const componentPath = `${writePath}/${componentFolder}/${componentName}.tsx`
+//   // const componentContent = extend
+//   //   ? Component.getExtendingComponent({ componentFolder, componentName, props, cvax })
+//   //   : Component.getComponent({ componentName, props, cvax })
 
-  const componentContent = new Component(componentName).getComponent({ componentName, props, cvax })
+//   const componentContent = new Component(componentName).getComponent({ componentName, props, cvax })
 
-  return write(componentPath, componentContent)
-}
+//   return write(componentPath, componentContent)
+// }
 
-async function writeIndex({
-  writePath,
-  componentFolder,
-  componentName,
-  append = false,
-  defaultExport = false,
-}: {
-  writePath: string
-  componentFolder: string
-  componentName: string
-  append?: boolean
-  defaultExport?: boolean
-}): Promise<void> {
-  const indexPath = `${writePath}/${componentFolder}/index.ts`
+// async function writeIndex({
+//   writePath,
+//   componentFolder,
+//   componentName,
+//   append = false,
+//   defaultExport = false,
+// }: {
+//   writePath: string
+//   componentFolder: string
+//   componentName: string
+//   append?: boolean
+//   defaultExport?: boolean
+// }): Promise<void> {
+//   const indexPath = `${writePath}/${componentFolder}/index.ts`
 
-  if (append) {
-    const indexContent = fs.readFileSync(indexPath, 'utf8')
-    const newIndexContent = indexContent + Component.getIndex(componentName, defaultExport)
+//   if (append) {
+//     const indexContent = fs.readFileSync(indexPath, 'utf8')
+//     const newIndexContent = indexContent + Component.getIndex(componentName, defaultExport)
 
-    return await write(indexPath, newIndexContent, true)
-  }
+//     return await write(indexPath, newIndexContent, true)
+//   }
 
-  const indexContent = Component.getIndex(componentName, defaultExport)
-  return await write(indexPath, indexContent)
-}
+//   const indexContent = Component.getIndex(componentName, defaultExport)
+//   return await write(indexPath, indexContent)
+// }
 
-async function write(path: string, content: string, override: boolean = false) {
-  if (override)
-    return await writeFile(path, content, {
-      mode: 0o644,
-    })
+// async function write(path: string, content: string, override: boolean = false) {
+//   if (override)
+//     return await writeFile(path, content, {
+//       mode: 0o644,
+//     })
 
-  if (fs.existsSync(path)) throw new Error(`${path} exist`)
+//   if (fs.existsSync(path)) throw new Error(`${path} exist`)
 
-  return await writeFile(path, content, {
-    mode: 0o644,
-  })
-}
+//   return await writeFile(path, content, {
+//     mode: 0o644,
+//   })
+// }
 
-function assertPath(path: string): asserts path is keyof typeof configs {
-  if (!(path in configs)) throw new Error('path error')
-}
+// function assertPath(path: string): asserts path is keyof typeof configs {
+//   if (!(path in configs)) throw new Error('path error')
+// }

@@ -1,14 +1,36 @@
+type S = {
+  componentName: string
+  cvax?: string
+  [k: string]: any
+  forwardRef?: boolean
+  props: string | undefined
+}
 export class Component {
+  // ✔️
   #componentName: string
 
-  #parsedProps: {
-    props: { [key: string]: string } | null
-    cvaxProps: { [key: string]: string } | null
-  } = {
-    props: null,
-    cvaxProps: null,
+  // ✔️
+  #rawProps: {
+    // ✔️
+    propsTyped: string | undefined
+    // ✔️
+    propsUntyped: string | undefined
   }
 
+  #parsedProps: {
+    // ✔️
+    typed: Array<[string, string, string | undefined]> | []
+    // ✔️
+    untyped: Array<[string, undefined, string | undefined]> | []
+    // ...
+    cvax: Array<[string, undefined, string | undefined]> | []
+  } = {
+    typed: [],
+    untyped: [],
+    cvax: [],
+  }
+
+  // ✔️
   #exports: {
     component?: string
     variantConfig?: string
@@ -16,7 +38,11 @@ export class Component {
     propsType?: string
   }
 
-  #imports: string[] = []
+  // ✔️
+  #imports: {
+    cvax?: string
+    forwardRef?: string
+  } = {}
   // #propsWithTypres = ''
   // #propsUnknown = ''
   #content: {
@@ -31,22 +57,26 @@ export class Component {
 
   // #returns = ''
 
-  constructor(componentName: string) {
+  constructor({ componentName, cvax, props, forwardRef }: S) {
     this.#componentName = componentName
+    this.#rawProps = this.getRawProps(props)
     this.#exports = this.generateExports(componentName, {
       component: 'named',
       variantConfig: true,
       variants: true,
       propsType: true,
     })
+    this.#imports = this.generateImpots({ cvax: Boolean(cvax), forwardRef })
+    this.#parsedProps.typed = this.getTypedProps()
+    this.#parsedProps.untyped = this.getUntypedProps()
   }
 
-  public setProps(props: string): void {
-    this.#parsedProps.props = { some: 'some' }
-  }
-  public setCvaxProps(props: string) {
-    this.#parsedProps.cvaxProps = { some: 'some' }
-  }
+  // public setProps(props: string): void {
+  //   this.#parsedProps.props = { some: 'some' }
+  // }
+  // public setCvaxProps(props: string) {
+  //   this.#parsedProps.cvaxProps = { some: 'some' }
+  // }
 
   // allowedPropTypes = ["string", "number", "any", "unknown", "object", "boolean"]
   public static getIndex(componentName: string, defaultExport: boolean = false) {
@@ -68,9 +98,6 @@ export class Component {
     rest?: boolean
     displayName?: boolean
   }): string {
-    if (forwardRef) this.#imports.push('import { forwardRef } from "react"')
-    if (cvax) this.#imports.push('import { cvax, VariantProps } from "cvax"')
-
     let declaredTypes = props ? this.getPropTypes(props) : []
     let unknownTypes = props ? this.getUnknownPropTypes(props) : []
     let componentProps: string[] = props ? this.getDestructuredProps(props) : []
@@ -266,6 +293,127 @@ export class Component {
   }
 
   // --
+  private getUntypedProps() {
+    let parsed
+
+    if (this.#rawProps.propsUntyped) parsed = this.ParseUntypedProps(this.#rawProps.propsUntyped)
+
+    return parsed || []
+  }
+
+  private ParseUntypedProps(props: string) {
+    const splitted = props.split(' ')
+
+    return splitted.map(item => {
+      const replacedArrow = equalToDashArrow(item)
+
+      const [propName, propDefaultValue] = replacedArrow.split('=') as [string, string | undefined]
+
+      let defaultPropValue
+      if (propDefaultValue) defaultPropValue = dashToEqualArrow(propDefaultValue)
+
+      return [propName, undefined, defaultPropValue]
+    }) as Array<[string, undefined, string | undefined]>
+  }
+
+  // --
+  private getTypedProps() {
+    let parsed
+    if (this.#rawProps.propsTyped) parsed = this.parseTypedProps(this.#rawProps.propsTyped)
+
+    return parsed || []
+  }
+
+  private parseTypedProps(props: string) {
+    // :
+    //   | {
+    //       propName: string
+    //       propType: string
+    //       defaultPropValue: string | undefined
+    //     }[]
+    //   | never
+
+    // "laoding?:boolean some?:string|undefined='asdfasdfasdfsadf"
+    // onClick:()=>()=>string=()=>()=>"asdfasdf"
+    // ['laoding?:boolean', 'onClick:()=>()=>string=()=>()=>"asdfasdf"']
+    const splitted = props.split(' ')
+
+    assertingPropsContainTypes(splitted) // assert that all typed props have ":"
+
+    return splitted.map(item => {
+      const replacedArrow = equalToDashArrow(item)
+
+      const [propName, propTypeAndDefaultValue] = replacedArrow.split(':')
+
+      const propType = dashToEqualArrow(propTypeAndDefaultValue.split('=')[0])
+
+      const defaultValue = replacedArrow.split('=')[1] as string | undefined
+      let defaultPropValue
+      if (defaultValue) defaultPropValue = dashToEqualArrow(defaultValue)
+
+      return [propName, propType, defaultPropValue]
+    }) as Array<[string, string, string | undefined]>
+  }
+
+  private getPropsOrRest(arg: string): [string, 'props'] | [string, 'rest'] | [string, undefined] {
+    if (arg.includes(' props'))
+      return [arg.replaceAll(' props', '').replaceAll(' rest', ''), 'props']
+
+    if (arg.includes(' rest')) return [arg.replaceAll(' rest', ''), 'rest']
+
+    return [arg, undefined]
+  }
+
+  private cleanProps(props: string) {
+    const one = props.trim().replace(/\s\s+/g, ' ').replace(/\ :/g, ':').replace(/:\ /g, ':')
+    return one
+  }
+
+  private getRawProps(props: string | undefined): {
+    propsTyped: string | undefined
+    propsUntyped: string | undefined
+  } {
+    if (!props) throw new Error('NO PROPS ERROR')
+
+    assertingNumberOfMatches(props, ',', 0, 1)
+
+    const cleanedProps = this.cleanProps(props)
+
+    if (cleanedProps.includes(':')) {
+      const [typed, untyped] = cleanedProps.split(',') as [string, string | undefined]
+      return {
+        propsTyped: typed.trim(),
+        propsUntyped: untyped ? untyped.trim() : undefined,
+      }
+    }
+
+    return {
+      propsTyped: undefined,
+      propsUntyped: cleanedProps,
+    }
+  }
+
+  // --
+  private generateImpots(
+    config: {
+      cvax?: boolean
+      forwardRef?: boolean
+    } = {
+      cvax: false,
+      forwardRef: false,
+    },
+  ) {
+    const arr: Array<[keyof typeof config, string]> = []
+
+    if (config.forwardRef) arr.push(['forwardRef', 'import { forwardRef } from "react"'])
+    if (config.cvax) arr.push(['cvax', 'import { cvax, VariantProps } from "cvax"'])
+
+    return Object.fromEntries(arr) as {
+      [key in keyof typeof config]: string
+    }
+  }
+
+  // --
   private generateExports(
     componentName: string,
     config: {
@@ -339,6 +487,13 @@ export class Component {
 
 // ------------------------------------------------------------------------------------
 
+function equalToDashArrow(arg: string) {
+  return arg.replaceAll('=>', '->')
+}
+function dashToEqualArrow(arg: string) {
+  return arg.replaceAll('->', '=>')
+}
+
 function uncapitalize<T extends string>(str: T) {
   return (str.charAt(0).toLowerCase() + str.slice(1)) as Uncapitalize<T>
 }
@@ -349,4 +504,26 @@ function capitalize<T extends string>(str: T) {
 
 function assertNever(arg: never): never {
   throw new Error(`${arg} of type ${typeof arg} should be of type never`)
+}
+
+function assertingPropsContainTypes(props: string[]): void | never {
+  if (Boolean(props.find(item => !item.includes(':'))))
+    throw new Error(
+      'Make sure that you use comma to separate props or declare all props for proped types',
+    )
+}
+
+function assertingNumberOfMatches(
+  str: string,
+  match: string /* | RegExp */,
+  min: number = 0,
+  max: number = 1,
+): void | never {
+  const re = new RegExp(match, 'g')
+
+  const numberOfMatches = [...str.matchAll(re)].length
+  if (numberOfMatches < 0 || numberOfMatches > 1)
+    throw new Error(
+      `${str} has ${numberOfMatches} number ${match}'s. Has to be more than ${min} and less than ${max}`,
+    )
 }

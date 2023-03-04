@@ -24,7 +24,6 @@ export default class Gen extends Command {
     extend: Flags.string({ char: 'e' }),
     // force: Flags.boolean({ char: "f", default: false }),
     cvax: Flags.string({ char: 'x' }),
-    displayName: Flags.string(),
   }
 
   static args = {
@@ -33,101 +32,86 @@ export default class Gen extends Command {
 
   public async run(): Promise<void | void[]> {
     const { args, flags } = await this.parse(Gen)
+
     if (!args.componentName) throw new Error('Must be component name')
 
-    const component = new Component(args.componentName) //.getComponent({ componentName, props, cvax })
+    const component = args.componentName
 
-    if (flags.displayName) component.setDisplayName(flags.displayName)
+    assertPath(flags.path)
+    const writePath = configs[flags.path]
 
-    component.printShit({
-      exports: true,
-    })
+    if (!fs.existsSync(writePath)) {
+      fs.mkdirSync(writePath)
+    }
+
+    if (flags.extend) {
+      if (flags.extend === args.componentName) throw new Error('Components have the same name')
+      if (!fs.existsSync(`${writePath}/${flags.extend}/${flags.extend}.tsx`))
+        throw new Error("Component doesn't exist")
+
+      try {
+        await Promise.all([
+          await writeComponent({
+            writePath,
+            componentFolder: flags.extend,
+            componentName: component,
+            props: flags.props,
+            extend: true,
+          }),
+
+          flags.stories &&
+            writeStories({
+              writePath,
+              componentFolder: flags.extend,
+              componentName: component,
+              props: flags.props,
+            }),
+
+          await writeIndex({
+            writePath,
+            componentFolder: flags.extend,
+            componentName: component,
+            append: true,
+          }),
+        ])
+        console.log('Files saved')
+      } catch (error: any) {
+        if ('message' in error) throw new Error(error.message)
+        throw new Error('Error')
+      }
+    } else {
+      if (fs.existsSync(`${writePath}/${component}`)) throw new Error('Component Exist')
+      fs.mkdirSync(`${writePath}/${component}`)
+
+      Promise.all([
+        await writeComponent({
+          writePath,
+          componentFolder: component,
+          componentName: component,
+          props: flags.props,
+          cvax: flags.cvax,
+        }),
+
+        flags.stories &&
+          writeStories({
+            writePath,
+            componentFolder: component,
+            componentName: component,
+            props: flags.props,
+          }),
+
+        await writeIndex({
+          writePath,
+          componentFolder: component,
+          componentName: component,
+        }),
+      ])
+    }
+
+    // format written files
+    exec('prettier --write ' + `${writePath}/${flags.extend || args.componentName}/*`)
   }
 }
-
-/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
 
 async function writeStories({
   writePath,

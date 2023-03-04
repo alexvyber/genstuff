@@ -25,32 +25,32 @@
     "build": "shx rm -rf dist && tsc -b",
     "clean": "shx rm -rf src/components && mkdir src/components",
     "lint": "eslint . --ext .ts --config .eslintrc.js",
-    "prepack": "yarn build && oclif manifest && oclif readme",
+    "prepack": "pnpm build && oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",
     "version": "oclif readme && git add README.md",
-    "publish": "yarn prepack && npm publish && yarn postpack"
+    "publish": "npm publish"
   },
   "dependencies": {
-    "@oclif/core": "^2",
-    "@oclif/plugin-help": "^5",
+    "@oclif/core": "^2.4.0",
+    "@oclif/plugin-help": "^5.2.6",
     "@oclif/plugin-plugins": "^2.3.2"
   },
   "devDependencies": {
     "@ladle/react": "^2.9.0",
-    "@oclif/test": "^2.3.6",
-    "@types/chai": "^4",
-    "@types/node": "^16.18.12",
+    "@oclif/test": "^2.3.8",
+    "@types/chai": "^4.3.4",
+    "@types/node": "^18.14.6",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "oclif": "^3.7.0",
     "react": "^18.2.0",
-    "shx": "^0.3.3",
+    "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
-    "typescript": "^4.9.5"
+    "typescript": "5.0.1-rc"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=16.0.0"
   },
   "oclif": {
     "bin": "genstuff",

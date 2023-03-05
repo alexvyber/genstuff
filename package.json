@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@ladle/react": "^2.9.0",
-    "@oclif/test": "^2.3.8",
+    "@oclif/test": "^2.3.9",
     "@testing-library/react": "^14.0.0",
     "@types/chai": "^4.3.4",
     "@types/node": "^18.14.6",

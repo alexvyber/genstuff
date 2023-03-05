@@ -1,227 +1,117 @@
-import { Args, Command, Flags } from '@oclif/core'
-import { Component } from '../lib/component'
-import fs = require('node:fs')
-import { writeFile } from 'node:fs/promises'
-import { exec } from 'node:child_process'
-import { Stories } from '../lib/stories'
-
-const configs = {
-  ui: 'src/components/ui',
-  common: 'src/components/common',
-  templates: 'src/components/templates',
-  views: 'src/components/views',
-} as const
+import { Args, Command, Flags } from '@oclif/core';
+import { Component } from '../lib/component';
+import fs = require('node:fs');
+import { exec } from 'node:child_process';
+import { write } from '../lib/utils';
+// import prettier from 'prettier';
+// import path from 'node:path';
 
 export default class Gen extends Command {
-  static description = 'describe the command here'
-  static examples = ['<%= config.bin %> <%= command.id %>']
+  static description = 'describe the command here';
+  static examples = ['<%= config.bin %> <%= command.id %>'];
 
   static flags = {
     props: Flags.string({ char: 'p' }),
     stories: Flags.boolean({ char: 's' }),
     defaultExport: Flags.boolean({ char: 'D' }),
-    path: Flags.string({ default: 'ui' }),
+    path: Flags.string({ default: 'ui', char: 'P' }),
     extend: Flags.string({ char: 'e' }),
-    // force: Flags.boolean({ char: "f", default: false }),
+    force: Flags.boolean({ char: 'f', default: false }),
     cvax: Flags.string({ char: 'x' }),
-    displayName: Flags.string(),
+    display: Flags.string(),
+    test: Flags.boolean(),
     ref: Flags.boolean(),
-    asFunc: Flags.boolean({ default: false }),
-  }
+    'as-func': Flags.boolean({ default: false }),
+    'no-variants': Flags.boolean(),
+    'no-config': Flags.boolean(),
+    'no-type': Flags.boolean(),
+    'in-place': Flags.boolean(),
+    'no-display': Flags.boolean(),
+  };
 
   static args = {
     componentName: Args.string({ description: 'file to read' }),
-  }
+  };
 
   public async run(): Promise<void | void[]> {
-    const { args, flags } = await this.parse(Gen)
-    if (!args.componentName) throw new Error('Must be component name')
+    const { args, flags } = await this.parse(Gen);
+    if (!args.componentName) throw new Error('Must be component name');
 
     const component = new Component({
       componentName: args.componentName,
+      printDisplayName: !flags['no-display'],
+      displayName: flags.display,
       props: flags.props,
       cvax: flags.cvax,
       ref: flags.ref,
-      asFunc: flags.asFunc,
-    }) //.getComponent({ componentName, props, cvax })
+      exports: {
+        defaultExport: flags.defaultExport,
+        variants: !flags['no-variants'],
+        variantConfig: !flags['no-config'],
+        propsType: !flags['no-type'],
+        inPlace: flags['in-place']
+          ? {
+              component: true,
+              types: true,
+              variants: true,
+              configs: true,
+            }
+          : undefined,
+      },
+    });
 
-    // if (flags.displayName) component.setDisplayName(flags.displayName)
+    const content = flags['as-func']
+      ? component.renderFunction()
+      : component.renderConst();
 
-    // component.printShit({
-    //   parsedProps: true,
-    // })
+    let formatted: undefined | string;
+    // try {
+    //   const configs = await prettier.resolveConfig(
+    //     path.join(__dirname, 'prettier.config.js'),
+    //   );
+    //   formatted = prettier.format(content, configs ? configs : undefined);
+    // } catch (_e) {}
 
-    console.log('🚀 ~ Gen ~ run ~ component.content:', component.content)
-    // console.log('🚀 ~ Gen ~ run ~ component.parsedProps.typed:', component.parsedProps.typed)
-    // console.log('🚀 ~ Gen ~ run ~ component.parsedProps.cvax:', component.parsedProps.cvax)
+    if (!fs.existsSync(`src/components/${flags.path}`))
+      fs.mkdirSync(`src/components/${flags.path}`);
+
+    if (!fs.existsSync(`src/components/${flags.path}/${args.componentName}`))
+      fs.mkdirSync(`src/components/${flags.path}/${args.componentName}`);
+
+    write(
+      `src/components/${flags.path}/${args.componentName}/${args.componentName}.tsx`,
+      formatted || content,
+      flags.force,
+    );
+
+    if (flags.stories) {
+      component.renderStories();
+      write(
+        `src/components/${flags.path}/${args.componentName}/${args.componentName}.stories.tsx`,
+        component.renderStories(),
+        flags.force,
+      );
+    }
+
+    if (flags.test) {
+      component.renderStories();
+      write(
+        `src/components/${flags.path}/${args.componentName}/${args.componentName}.test.tsx`,
+        component.renderTest(),
+        flags.force,
+      );
+    }
+
+    write(
+      `src/components/${flags.path}/${args.componentName}/index.ts`,
+      component.renderIndex(),
+      flags.force,
+    );
+
+    exec(
+      `prettier --write src/components/${flags.path}/${args.componentName}/*`,
+    );
+
+    // console.log('🚀 ~ Gen ~ run ~ content:', content);
   }
 }
-
-/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
-
-// async function writeStories({
-//   writePath,
-//   componentFolder,
-//   componentName,
-//   props,
-// }: {
-//   writePath: string
-//   componentFolder: string
-//   componentName: string
-//   props: string | undefined
-// }): Promise<void> {
-//   const storiesPath = `${writePath}/${componentFolder}/${componentName}.stories.tsx`
-//   const storiesContent = Stories.getStories(componentName, props)
-
-//   return write(storiesPath, storiesContent)
-// }
-
-// async function writeComponent({
-//   writePath,
-//   componentFolder,
-//   componentName,
-//   props,
-//   extend = false,
-//   cvax,
-// }: {
-//   writePath: string
-//   componentFolder: string
-//   componentName: string
-//   props?: string
-//   extend?: boolean
-//   cvax?: string
-// }): Promise<void> {
-//   const componentPath = `${writePath}/${componentFolder}/${componentName}.tsx`
-//   // const componentContent = extend
-//   //   ? Component.getExtendingComponent({ componentFolder, componentName, props, cvax })
-//   //   : Component.getComponent({ componentName, props, cvax })
-
-//   const componentContent = new Component(componentName).getComponent({ componentName, props, cvax })
-
-//   return write(componentPath, componentContent)
-// }
-
-// async function writeIndex({
-//   writePath,
-//   componentFolder,
-//   componentName,
-//   append = false,
-//   defaultExport = false,
-// }: {
-//   writePath: string
-//   componentFolder: string
-//   componentName: string
-//   append?: boolean
-//   defaultExport?: boolean
-// }): Promise<void> {
-//   const indexPath = `${writePath}/${componentFolder}/index.ts`
-
-//   if (append) {
-//     const indexContent = fs.readFileSync(indexPath, 'utf8')
-//     const newIndexContent = indexContent + Component.getIndex(componentName, defaultExport)
-
-//     return await write(indexPath, newIndexContent, true)
-//   }
-
-//   const indexContent = Component.getIndex(componentName, defaultExport)
-//   return await write(indexPath, indexContent)
-// }
-
-// async function write(path: string, content: string, override: boolean = false) {
-//   if (override)
-//     return await writeFile(path, content, {
-//       mode: 0o644,
-//     })
-
-//   if (fs.existsSync(path)) throw new Error(`${path} exist`)
-
-//   return await writeFile(path, content, {
-//     mode: 0o644,
-//   })
-// }
-
-// function assertPath(path: string): asserts path is keyof typeof configs {
-//   if (!(path in configs)) throw new Error('path error')
-// }

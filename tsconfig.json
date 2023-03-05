@@ -2,13 +2,13 @@
   "compilerOptions": {
     "declaration": true,
     "importHelpers": true,
-    "module": "commonjs",
+    "module": "Node16",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "jsx": "preserve",
-    "target": "es2021"
+    "target": "ESNext"
   },
   "include": ["src/**/*"]
 }

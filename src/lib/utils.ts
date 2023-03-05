@@ -1,3 +1,6 @@
+import { writeFile } from 'node:fs/promises'
+import fs = require('node:fs')
+
 export function equalToDashArrow(arg: string) {
   return arg.replaceAll('=>', '->')
 }
@@ -37,4 +40,28 @@ export function assertingNumberOfMatches(
   const numberOfMatches = [...str.matchAll(re)].length
   if (numberOfMatches < 0 || numberOfMatches > 1)
     throw new Error(`${str} has ${numberOfMatches} number ${match}'s. Has to be more than ${min} and less than ${max}`)
+}
+
+const configs = {
+  ui: 'src/components/ui',
+  common: 'src/components/common',
+  templates: 'src/components/templates',
+  views: 'src/components/views',
+} as const
+
+export function assertPath(path: string): asserts path is keyof typeof configs {
+  if (!(path in configs)) throw new Error('path error')
+}
+
+export async function write(path: string, content: string, override: boolean = false) {
+  if (override)
+    return await writeFile(path, content, {
+      mode: 0o644,
+    })
+
+  if (fs.existsSync(path)) throw new Error(`${path} exist`)
+
+  return await writeFile(path, content, {
+    mode: 0o644,
+  })
 }

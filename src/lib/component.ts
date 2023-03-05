@@ -20,34 +20,45 @@ const parts = [
   'exports',
 ] as const
 
-type Target = typeof parts[number]
+type Target = (typeof parts)[number]
+
+type Exports = {
+  defaultExport?: boolean
+  variantConfig?: boolean
+  variants?: boolean
+  propsType?: boolean
+  inPlace?: {
+    component?: boolean
+    types?: boolean
+    variants?: boolean
+    configs?: boolean
+  }
+}
+
+type Config = {
+  FC?: boolean
+  ref?: boolean
+  cvax?: boolean
+  printDisplayName?: boolean
+  exports?: Exports
+}
+
 type Content = { [key in Target]: string[] | [] }
 
-const defaultExportConfig = { component: 'named', variantConfig: true, variants: true, propsType: true } as const
-
 export class Component {
-  // ✔️
   #componentName: string
 
-  // ✔️
-  #displayName: string
+  #displayName?: string
 
-  // ✔️
   #rawProps: {
-    // ✔️
     propsTyped: string | undefined
-    // ✔️
     propsUntyped: string | undefined
   }
 
   #parsedProps: {
-    // ✔️
     typed: Array<[string, string[], string | undefined]> | []
-    // ✔️
     untyped: Array<[string, undefined, string | undefined]> | []
-    // ✔️
     cvax: Array<[string, string[] | undefined, string | undefined]> | []
-
     rest?: false | 'rest' | 'props'
   } = {
     typed: [],
@@ -56,57 +67,64 @@ export class Component {
     rest: false,
   }
 
-  // ✔️
   #exports: string[] | undefined
-
-  // ✔️
   #imports: string[] | undefined
 
-  // ✔️
   #content: Content
 
-  // ✔️
-  #config: {
-    asFunc?: boolean
-    FC?: boolean
-    ref?: boolean
-    cvax?: boolean
-  } = {
-    asFunc: false,
+  #config: Config = {
     FC: false,
     ref: false,
     cvax: false,
+    printDisplayName: true,
+    exports: {
+      defaultExport: false,
+      variantConfig: false,
+      variants: false,
+      propsType: false,
+      inPlace: {
+        component: false,
+        types: false,
+        variants: false,
+        configs: false,
+      },
+    },
   }
 
   constructor({
     componentName,
+    displayName,
     cvax,
     props,
     ref,
-    asFunc,
     FC,
+    printDisplayName,
+    exports,
   }: {
     componentName: string
+    displayName?: string | undefined
     cvax?: string
     props?: string
     ref?: boolean
-    asFunc?: boolean
     FC?: boolean
+    printDisplayName?: boolean
+    exports?: Exports
   }) {
     this.#config = {
       ref,
       FC,
-      asFunc,
       cvax: Boolean(cvax),
+      printDisplayName,
+      exports,
     }
     this.#componentName = componentName
-    this.#displayName = componentName
+    this.#displayName = displayName
     this.#rawProps = this.getRawProps(props)
     this.#parsedProps.typed = this.getTypedProps()
     this.#parsedProps.untyped = this.getUntypedProps()
     this.#parsedProps.cvax = this.getCvaxProps(cvax)
     this.#imports = this.generateImpots({ cvax: Boolean(cvax), ref })
-    this.#exports = this.generateExports(componentName, defaultExportConfig)
+    this.#exports = this.generateExports(componentName)
     this.#content = this.createContent()
     this.generateParts()
   }
@@ -116,9 +134,24 @@ export class Component {
 
     this.append('after', `${this.#componentName}.displayName = "${this.#componentName}"`)
 
-    this.append('parameters', this.generateParameters())
+    if (this.#parsedProps.typed.length || this.#parsedProps.untyped.length || this.#parsedProps.cvax.length)
+      this.append('parameters', this.generateParameters().join(','))
 
-    if (this.#parsedProps.cvax) {
+    if (this.#parsedProps.cvax.length) {
+      this.append(
+        'setup',
+        `const config = { 
+        variants: {
+          ${this.#parsedProps.cvax
+            .map(item => `${item[0]}:  ${item[1] ? `{ ${item[1].map(item_ => `${item_}: ""`)} }` : ''}`)
+            .join(',')}
+        }
+      } as const 
+      `,
+      )
+
+      this.append('setup', 'const variants = cvax(config)')
+
       this.append(
         'types',
         `type Props = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof variants> & {${this.#parsedProps.typed
@@ -135,31 +168,41 @@ export class Component {
     }
 
     if (this.#exports) this.append('exports', this.#exports.join(','))
-
-    console.log('🚀 ~ Component ~ generateParts ~ this.asdf():', this.asdf())
   }
 
   private generateParameters() {
-    return `
-    ${this.#parsedProps.typed.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')},
-    ${this.#parsedProps.untyped.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')},
-    ${this.#parsedProps.cvax.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')}`
+    return [
+      `${this.#parsedProps.typed.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')}`,
+      `${this.#parsedProps.untyped.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')}`,
+      `${this.#parsedProps.cvax.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')}`,
+    ].filter(item => item.length > 0)
   }
 
-  private generateRest() {
-    return {
-      parameter: `${this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''}`,
-      prop: `${this.#parsedProps.rest ? '{...' + this.#parsedProps.rest + '}' : ''}`,
-    }
+  private generateProps() {
+    return [
+      `${this.#parsedProps.typed.map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`).join(',')}`,
+      `${this.#parsedProps.untyped.map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`).join(',')}`,
+      `${this.#parsedProps.cvax.map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`).join(',')}`,
+    ].filter(item => item.length > 0)
   }
 
-  private asdf() {
-    if (this.#config.asFunc) {
-      return ''
-    }
+  public renderFunction() {
+    if (this.#config.ref) {
+      return `
+    ${this.#content.imports.join(';')};
 
-    return `const ${this.#componentName} = ${this.#config.ref ? 'forwardRef<HTMLDivElement, Props>' : ''}(
-      ({ ${this.#content.parameters}, ${this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''} }, ref) => {
+    ${this.#content.setup.join(';')};
+
+    ${this.#content.types.join(';')}
+
+    const ${this.#componentName} = ${this.#config.ref ? 'forwardRef<HTMLDivElement, Props>(' : ''}
+    ${
+      this.#config.exports?.inPlace?.component ? `export ${this.#config.exports?.defaultExport ? 'default' : ''}` : ''
+    } function ${this.#componentName} ({ ${this.#content.parameters} ${
+        this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''
+      } }  ${!this.#config.ref ? ': Props' : ''}
+       ${this.#config.ref ? ', ref ' : ''}
+      )  {
         return(
           <div
           ${this.#config.ref ? 'ref={ref}' : ''}
@@ -169,8 +212,106 @@ export class Component {
               : ''
           }
            />
-          )
-        })`
+          );
+        }
+
+        ${this.#config.ref ? ') ' : ''};
+
+        ${
+          this.#config.printDisplayName
+            ? `${this.#componentName}.displayName = "${this.#displayName || this.#componentName}"`
+            : ''
+        }
+
+        export { ${this.#content.exports.join(',')} }
+        
+        `
+    }
+
+    return `
+    ${this.#content.imports.join(';')};
+
+    ${this.#content.setup.join(';')};
+
+    ${this.#content.types.join(';')}
+
+    ${
+      this.#config.exports?.inPlace?.component ? `export ${this.#config.exports?.defaultExport ? 'default' : ''}` : ''
+    } function ${this.#componentName} 
+      ({ ${this.#content.parameters} ${this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''} }  ${
+      !this.#config.ref ? ': Props' : ''
+    }
+       ${this.#config.ref ? ', ref ' : ''}
+      )  {
+        return(
+          <div
+          ${this.#config.ref ? 'ref={ref}' : ''}
+          ${
+            this.#config.cvax
+              ? `className={cn(variants({ ${this.#parsedProps.cvax.map(item => `${item[0]}`).join(',')}}))}`
+              : ''
+          }
+           />
+          );
+        }
+
+        ${this.#config.ref ? ') ' : ''};
+
+
+        ${
+          this.#config.printDisplayName
+            ? `${this.#componentName}.displayName = "${this.#displayName || this.#componentName}"`
+            : ''
+        }
+
+        export { ${this.#content.exports.join(',')} }
+        
+        `
+  }
+
+  public renderConst() {
+    return `
+    ${this.#content.imports.join(';')};
+
+    ${this.#content.setup.join(';')};
+
+    ${this.#content.types.join(';')}
+
+    ${this.#config.exports?.inPlace?.component && !this.#config.exports?.defaultExport ? 'export' : ''} const ${
+      this.#componentName
+    } = ${this.#config.ref ? 'forwardRef<HTMLDivElement, Props>(' : ''}
+      ({ ${this.#content.parameters} ${this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''} }  ${
+      !this.#config.ref ? ': Props' : ''
+    }
+       ${this.#config.ref ? ', ref ' : ''}
+      ) => {
+        return(
+          <div
+          ${this.#config.ref ? 'ref={ref}' : ''}
+          ${
+            this.#config.cvax
+              ? `className={cn(variants({ ${this.#parsedProps.cvax.map(item => `${item[0]}`).join(',')}}))}`
+              : ''
+          }
+           />
+          );
+        }
+
+        ${this.#config.ref ? ') ' : ''};
+
+        
+        ${
+          this.#config.printDisplayName
+            ? `${this.#componentName}.displayName = "${this.#displayName || this.#componentName}"`
+            : ''
+        }
+        
+
+        export {  ${
+          this.#config.exports?.defaultExport ? `${this.#componentName} as default,` : ''
+        } ${this.#content.exports.join(',')} }
+        
+        `
   }
 
   private createContent() {
@@ -203,8 +344,6 @@ export class Component {
       return this.ParseUntypedProps(this.cleanProps(withoutRest))
     }
   }
-
-  // -- --  -- --  -- --  -- --  -- --  -- --  -- --
 
   private parseTypedProps(props: string) {
     const splitted = props.split(' ')
@@ -318,27 +457,29 @@ export class Component {
     const arr: string[] = []
 
     if (config.ref) arr.push('import { forwardRef } from "react"')
-    if (config.cvax) arr.push('import { cvax, VariantProps } from "cvax"')
+    if (config.cvax) arr.push('import { cvax, cn, VariantProps } from "cvax"')
 
     return arr
   }
 
-  private generateExports(
-    componentName: string,
-    config: {
-      component?: 'default' | 'named'
-      variantConfig?: boolean
-      variants?: boolean
-      propsType?: boolean
-    } = { component: 'named' },
-  ) {
-    const arr: string[] = [config.component === 'default' ? `${componentName} as default` : componentName]
+  private generateExports(componentName: string) {
+    const arr: string[] = [
+      !this.#config.exports?.inPlace?.component
+        ? this.#config.exports?.defaultExport
+          ? `${componentName} as default`
+          : componentName
+        : '',
+    ]
 
-    if (config.variantConfig) arr.push(`config as ${uncapitalize(componentName)}Config`)
-    if (config.variants) arr.push(`variants as ${uncapitalize(componentName)}Variants`)
-    if (config.propsType) arr.push(`type Props as ${componentName}Props`)
+    if (this.#config.exports?.variantConfig && this.#parsedProps.cvax.length)
+      arr.push(`config as ${uncapitalize(componentName)}Config`)
 
-    return arr
+    if (this.#config.exports?.variants && this.#parsedProps.cvax.length)
+      arr.push(`variants as ${uncapitalize(componentName)}Variants`)
+
+    if (this.#config.exports?.propsType) arr.push(`type Props as ${componentName}Props`)
+
+    return arr.filter(item => item.trim().length > 0)
   }
 
   public prepend(target: Target, content: string) {
@@ -348,43 +489,75 @@ export class Component {
     this.#content[target] = [...this.#content[target], content]
   }
 
-  get displayName() {
-    return this.#displayName
-  }
-  set displayName(displayName: string) {
-    this.#displayName = displayName
+  public renderIndex() {
+    if (this.#config.exports?.defaultExport) return `export default from "./${this.#componentName}"`
+    return `export {${this.#componentName}} from "./${this.#componentName}"`
   }
 
-  get content() {
-    return this.#content
+  public renderStories(): string {
+    return `
+    import React from 'react'
+    import { ${this.#componentName} } from "./${this.#componentName}"
+    
+    import type { Story } from "@ladle/react"
+    import type { ${this.#componentName}Props as Props } from "./${this.#componentName}"
+    
+    export default {
+      title: "${this.#componentName}/Default"
+    }
+    
+    export const Default: Story<Props> = args => <${this.#componentName} {...args} />
+    Default.args = {  ${this.generateProps().join(',')} ${
+      this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''
+    }  } satisfies Props
+    
+    Default.argTypes = {}
+    `
   }
 
-  get componentName(): string | undefined {
-    return this.#componentName
+  public renderTest(): string {
+    return `
+    import { expect, test } from "vitest";
+    import { render, screen, within } from "@testing-library/react";
+    import { ${this.#componentName} } from "./${this.#componentName}"
+    
+    test("${this.#componentName} renders", () => {
+      render(<${this.#componentName} {...{  ${this.generateProps().join(',')} ${
+      this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''
+    } }} />);
+    });`
   }
+  // get displayName() {
+  //   return this.#displayName
+  // }
+  // set displayName(displayName: string) {
+  //   this.#displayName = displayName
+  // }
 
-  get rawProps() {
-    return this.#rawProps
-  }
+  // private generateRest() {
+  //   return {
+  //     parameter: `${
+  //       this.#parsedProps.rest ? ', ...' + this.#parsedProps.rest : ''
+  //     }`,
+  //     prop: `${
+  //       this.#parsedProps.rest ? '{...' + this.#parsedProps.rest + '}' : ''
+  //     }`,
+  //   };
+  // }
 
-  get parsedProps() {
-    return this.#parsedProps
-  }
+  // get componentName(): string | undefined {
+  //   return this.#componentName;
+  // }
 
-  // public printShit({
-  //   content = false,
-  //   imports = false,
-  //   exports = false,
-  //   parsedProps = false,
-  //   componentName = false,
-  // }: {
-  //   [key: string]: boolean
-  // }) {
-  //   content && console.log('🚀 ~ Component ~ printShit ~ this.#content:', this.#content)
-  //   imports && console.log('🚀 ~ Component ~ printShit ~ this.#imports:', this.#imports)
-  //   exports && console.log('🚀 ~ Component ~ printShit ~ this.#exports:', this.#exports)
-  //   parsedProps && console.log('🚀 ~ Component ~ printShit ~ this.#parsedProps:', this.#parsedProps)
-  //   componentName &&
-  //     console.log('🚀 ~ Component ~ printShit ~ this.#componentName:', this.#componentName)
+  // get content() {
+  //   return this.#content;
+  // }
+
+  // get rawProps() {
+  //   return this.#rawProps;
+  // }
+
+  // get parsedProps() {
+  //   return this.#parsedProps;
   // }
 }

@@ -22,7 +22,7 @@ $ npm install -g genstuff
 $ genstuff COMMAND
 running command...
 $ genstuff (--version)
-genstuff/0.0.0-alpha.15 linux-x64 node-v18.14.2
+genstuff/0.0.0-alpha.16 linux-x64 node-v18.14.2
 $ genstuff --help [COMMAND]
 USAGE
   $ genstuff COMMAND
@@ -83,7 +83,7 @@ EXAMPLES
   $ genstuff gen
 ```
 
-_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.15/dist/commands/gen.ts)_
+_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.16/dist/commands/gen.ts)_
 
 ## `genstuff help [COMMANDS]`
 

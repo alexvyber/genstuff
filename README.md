@@ -51,18 +51,30 @@ describe the command here
 
 ```
 USAGE
-  $ genstuff gen [COMPONENTNAME] [-p <value>] [-s] [-D] [--path <value>] [-e <value>] [-x <value>]
+  $ genstuff gen [COMPONENTNAME] [-p <value>] [-s] [-D] [-P <value>] [-e <value>] [-f] [-x <value>]
+    [--display <value>] [--test] [--ref] [--as-func] [--no-variants] [--no-config] [--no-type] [--in-place]
+    [--no-display]
 
 ARGUMENTS
   COMPONENTNAME  file to read
 
 FLAGS
   -D, --defaultExport
+  -P, --path=<value>    [default: ui]
   -e, --extend=<value>
+  -f, --force
   -p, --props=<value>
   -s, --stories
   -x, --cvax=<value>
-  --path=<value>        [default: ui]
+  --as-func
+  --display=<value>
+  --in-place
+  --no-config
+  --no-display
+  --no-type
+  --no-variants
+  --ref
+  --test
 
 DESCRIPTION
   describe the command here

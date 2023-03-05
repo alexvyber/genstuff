@@ -1,14 +1,12 @@
-import { Args, Command, Flags } from '@oclif/core';
-import { Component } from '../lib/component';
-import fs = require('node:fs');
-import { exec } from 'node:child_process';
-import { write } from '../lib/utils';
-// import prettier from 'prettier';
-// import path from 'node:path';
+import { Args, Command, Flags } from '@oclif/core'
+import { Component } from '../lib/component'
+import fs = require('node:fs')
+import { exec } from 'node:child_process'
+import { write } from '../lib/utils'
 
 export default class Gen extends Command {
-  static description = 'describe the command here';
-  static examples = ['<%= config.bin %> <%= command.id %>'];
+  static description = 'describe the command here'
+  static examples = ['<%= config.bin %> <%= command.id %>']
 
   static flags = {
     props: Flags.string({ char: 'p' }),
@@ -27,15 +25,16 @@ export default class Gen extends Command {
     'no-type': Flags.boolean(),
     'in-place': Flags.boolean(),
     'no-display': Flags.boolean(),
-  };
+    pretty: Flags.boolean(),
+  }
 
   static args = {
     componentName: Args.string({ description: 'file to read' }),
-  };
+  }
 
   public async run(): Promise<void | void[]> {
-    const { args, flags } = await this.parse(Gen);
-    if (!args.componentName) throw new Error('Must be component name');
+    const { args, flags } = await this.parse(Gen)
+    if (!args.componentName) throw new Error('Must be component name')
 
     const component = new Component({
       componentName: args.componentName,
@@ -58,60 +57,36 @@ export default class Gen extends Command {
             }
           : undefined,
       },
-    });
+    })
 
-    const content = flags['as-func']
-      ? component.renderFunction()
-      : component.renderConst();
-
-    let formatted: undefined | string;
-    // try {
-    //   const configs = await prettier.resolveConfig(
-    //     path.join(__dirname, 'prettier.config.js'),
-    //   );
-    //   formatted = prettier.format(content, configs ? configs : undefined);
-    // } catch (_e) {}
-
-    if (!fs.existsSync(`src/components/${flags.path}`))
-      fs.mkdirSync(`src/components/${flags.path}`);
+    if (!fs.existsSync(`src/components/${flags.path}`)) fs.mkdirSync(`src/components/${flags.path}`)
 
     if (!fs.existsSync(`src/components/${flags.path}/${args.componentName}`))
-      fs.mkdirSync(`src/components/${flags.path}/${args.componentName}`);
+      fs.mkdirSync(`src/components/${flags.path}/${args.componentName}`)
 
     write(
       `src/components/${flags.path}/${args.componentName}/${args.componentName}.tsx`,
-      formatted || content,
+      flags['as-func'] ? component.renderFunction() : component.renderConst(),
       flags.force,
-    );
+    )
 
-    if (flags.stories) {
-      component.renderStories();
+    if (flags.stories)
       write(
         `src/components/${flags.path}/${args.componentName}/${args.componentName}.stories.tsx`,
         component.renderStories(),
         flags.force,
-      );
-    }
+      )
 
-    if (flags.test) {
-      component.renderStories();
+    if (flags.test)
       write(
         `src/components/${flags.path}/${args.componentName}/${args.componentName}.test.tsx`,
         component.renderTest(),
         flags.force,
-      );
-    }
+      )
 
-    write(
-      `src/components/${flags.path}/${args.componentName}/index.ts`,
-      component.renderIndex(),
-      flags.force,
-    );
+    write(`src/components/${flags.path}/${args.componentName}/index.ts`, component.renderIndex(), flags.force)
 
-    exec(
-      `prettier --write src/components/${flags.path}/${args.componentName}/*`,
-    );
-
-    // console.log('🚀 ~ Gen ~ run ~ content:', content);
+    // FIXME: rewrite to use prettier like normal human
+    flags.pretty && exec(`prettier --write src/components/${flags.path}/${args.componentName}/*`)
   }
 }

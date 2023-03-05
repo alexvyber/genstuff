@@ -2,13 +2,14 @@
   "compilerOptions": {
     "declaration": true,
     "importHelpers": true,
-    "module": "Node16",
+    "module": "commonjs",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "jsx": "preserve",
-    "target": "ESNext"
+    "target": "es2021"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "build", "node_modules", "**/*.stories.*", ".yarn", ".ladle", "components"]
 }

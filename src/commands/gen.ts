@@ -19,7 +19,7 @@ export default class Gen extends Command {
     display: Flags.string(),
     test: Flags.boolean(),
     ref: Flags.boolean(),
-    'as-func': Flags.boolean({ default: false }),
+    // 'as-func': Flags.boolean({ default: false }),
     'no-variants': Flags.boolean(),
     'no-config': Flags.boolean(),
     'no-type': Flags.boolean(),
@@ -59,14 +59,15 @@ export default class Gen extends Command {
       },
     })
 
-    if (!fs.existsSync(`src/components/${flags.path}`)) fs.mkdirSync(`src/components/${flags.path}`)
+    if (!fs.existsSync(`src/components/${flags.path}`))
+      fs.mkdirSync(`src/components/${flags.path}`)
 
     if (!fs.existsSync(`src/components/${flags.path}/${args.componentName}`))
       fs.mkdirSync(`src/components/${flags.path}/${args.componentName}`)
 
     write(
       `src/components/${flags.path}/${args.componentName}/${args.componentName}.tsx`,
-      flags['as-func'] ? component.renderFunction() : component.renderConst(),
+      component.renderConst(),
       flags.force,
     )
 
@@ -84,9 +85,16 @@ export default class Gen extends Command {
         flags.force,
       )
 
-    write(`src/components/${flags.path}/${args.componentName}/index.ts`, component.renderIndex(), flags.force)
+    write(
+      `src/components/${flags.path}/${args.componentName}/index.ts`,
+      component.renderIndex(),
+      flags.force,
+    )
 
     // FIXME: rewrite to use prettier like normal human
-    flags.pretty && exec(`prettier --write src/components/${flags.path}/${args.componentName}/*`)
+    flags.pretty &&
+      exec(
+        `prettier --write src/components/${flags.path}/${args.componentName}/*`,
+      )
   }
 }

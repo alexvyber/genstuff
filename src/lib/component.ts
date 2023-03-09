@@ -45,6 +45,17 @@ type Config = {
 
 type Content = { [key in Target]: string[] | [] }
 
+type Types =
+  | 'string'
+  | 'number'
+  | 'object'
+  | 'boolean'
+  | '{}'
+  | '[]'
+  | 'any'
+  | 'never'
+  | 'void'
+
 export class Component {
   #componentName: string
 
@@ -60,11 +71,15 @@ export class Component {
     untyped: Array<[string, undefined, string | undefined]> | []
     cvax: Array<[string, string[] | undefined, string | undefined]> | []
     rest?: false | 'rest' | 'props'
+    as?: boolean
+    children?: boolean
   } = {
     typed: [],
     untyped: [],
     cvax: [],
     rest: false,
+    as: false,
+    children: false,
   }
 
   #exports: string[] | undefined
@@ -132,9 +147,16 @@ export class Component {
   private generateParts(): void {
     if (this.#imports) this.append('imports', this.#imports.join(';'))
 
-    this.append('after', `${this.#componentName}.displayName = "${this.#componentName}"`)
+    this.append(
+      'after',
+      `${this.#componentName}.displayName = "${this.#componentName}"`,
+    )
 
-    if (this.#props.typed.length || this.#props.untyped.length || this.#props.cvax.length)
+    if (
+      this.#props.typed.length ||
+      this.#props.untyped.length ||
+      this.#props.cvax.length
+    )
       this.append('parameters', this.generateParameters().join(','))
 
     if (this.#props.cvax.length) {
@@ -144,16 +166,21 @@ export class Component {
         base: "",
         variants: {
           ${this.#props.cvax
-            .map(item => `${item[0]}:  ${item[1] ? `{ ${item[1].map(item_ => `${item_}: ""`)} }` : '{}'}`)
+            .map(
+              item =>
+                `${item[0]}:  ${
+                  item[1] ? `{ ${item[1].map(item_ => `${item_}: ""`)} }` : '{}'
+                }`,
+            )
             .join(',')}
         },
         defaultVariants: { ${this.#props.cvax
-          .map(item => `${item[0]}:  ${item[1] ? ` ${item[1][0]} ` : '"FIXME"'}`)
+          .map(
+            item => `${item[0]}:  ${item[1] ? `"${item[1][0]}"` : '"FIXME"'}`,
+          )
           .join(',')} },
         compoundVariants: [],
-      } as const;
-
-      `,
+      } as const`,
       )
 
       this.append('setup', 'const variants = cvax(config)')
@@ -162,14 +189,21 @@ export class Component {
         'types',
         `type Props = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof variants> & {${this.#props.typed
           .map(item => `${item[0]}: ${item[1].join('|')};`)
-          .join('')}${this.#props.untyped.map(item => `${item[0]}: unknown;`).join('')}  };`,
+          .join('')}
+          ${this.#props.untyped.map(item => `${item[0]}: unknown;`).join('')}${
+          this.#props.as ? 'as?: keyof JSX.IntrinsicElements;' : ''
+        }
+        } 
+          ${this.#props.children ? '& React.PropsWithChildren' : ''};`,
       )
     } else {
       this.append(
         'types',
         `type Props ={${this.#props.typed
           .map(item => `${item[0]}: ${item[1].join('|')};`)
-          .join('')}${this.#props.untyped.map(item => `${item[0]}: unknown;`).join('')}  };`,
+          .join('')}${this.#props.untyped
+          .map(item => `${item[0]}: unknown;`)
+          .join('')}  };`,
       )
     }
 
@@ -178,17 +212,60 @@ export class Component {
 
   private generateParameters(): string[] {
     return [
-      `${this.#props.typed.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')}`,
-      `${this.#props.untyped.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')}`,
-      `${this.#props.cvax.map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`).join(',')}`,
+      `${this.#props.children ? 'children' : ''}`,
+      `${this.#props.as ? 'as: Component="div"' : ''}`,
+      `${this.#props.typed
+        .map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`)
+        .join(',')}`,
+      `${this.#props.untyped
+        .map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`)
+        .join(',')}`,
+      `${this.#props.cvax
+        .map(item => `${item[0]} ${item[2] ? '=' + item[2] : ''}`)
+        .join(',')}`,
     ].filter(item => item.length > 0)
   }
 
   private generateProps(): string[] {
     return [
-      `${this.#props.typed.map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`).join(',')}`,
-      `${this.#props.untyped.map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`).join(',')}`,
-      `${this.#props.cvax.map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`).join(',')}`,
+      `${this.#props.typed
+        .map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`)
+        .join(',')}`,
+      `${this.#props.untyped
+        .map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`)
+        .join(',')}`,
+      `${this.#props.cvax
+        .map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`)
+        .join(',')}`,
+    ].filter(item => item.length > 0)
+  }
+
+  private getPropValue(arg: Types | string | undefined) {
+    if (typeof arg === 'string') return '"string"'
+    if (typeof arg === 'number') return 69
+    if (typeof arg === 'boolean') return Math.random() > 0.5
+
+    return '"unknown"'
+  }
+
+  private generateStoriesProps(): string[] {
+    return [
+      `${this.#props.typed
+        .map(
+          item =>
+            `${item[0]} ${
+              item[2]
+                ? ':' + item[2]
+                : `${item[1] ? `: ${this.getPropValue(item[1][0])}` : ''}`
+            }`,
+        )
+        .join(',')}`,
+      `${this.#props.untyped
+        .map(item => `${item[0]} ${item[2] ? ':' + item[2] : ''}`)
+        .join(',')}`,
+      `${this.#props.cvax
+        .map(item => `${item[0]} ${item[1] ? ':' + `"${item[1][0]}"` : ''}`)
+        .join(',')}`,
     ].filter(item => item.length > 0)
   }
 
@@ -210,15 +287,22 @@ export class Component {
 
   private getCvaxProps(
     props: string | undefined,
-  ): [string, string[], string | undefined][] | [string, undefined, string | undefined][] {
+  ):
+    | [string, string[], string | undefined][]
+    | [string, undefined, string | undefined][] {
     if (!props) return []
 
-    const withoutRest = this.getPropsOrRest(props)
+    // const withoutRest = this.getPropsOrRest(props)
+    // if (propsContainTypes(withoutRest.split(' '))) {
+    //   return this.parseTypedProps(this.cleanProps(withoutRest))
+    // } else {
+    //   return this.ParseUntypedProps(this.cleanProps(withoutRest))
+    // }
 
-    if (propsContainTypes(withoutRest.split(' '))) {
-      return this.parseTypedProps(this.cleanProps(withoutRest))
+    if (propsContainTypes(props.split(' '))) {
+      return this.parseTypedProps(this.cleanProps(props))
     } else {
-      return this.ParseUntypedProps(this.cleanProps(withoutRest))
+      return this.ParseUntypedProps(this.cleanProps(props))
     }
   }
 
@@ -230,9 +314,13 @@ export class Component {
     return splitted.map(item => {
       const replacedArrow = equalToDashArrow(item)
 
-      const [propName, propTypeAndDefaultValue] = replacedArrow.split(':') as [string, string | undefined]
+      const [propName, propTypeAndDefaultValue] = replacedArrow.split(':') as [
+        string,
+        string | undefined,
+      ]
 
-      if (!propTypeAndDefaultValue) throw new Error('Props... Make sure you used comma `,`')
+      if (!propTypeAndDefaultValue)
+        throw new Error('Props... Make sure you used comma `,`')
 
       const propType = dashToEqualArrow(propTypeAndDefaultValue.split('=')[0])
 
@@ -245,18 +333,23 @@ export class Component {
   }
 
   private ParseUntypedProps(props: string) {
-    const withoutRest = this.getPropsOrRest(props)
-    const splitted = withoutRest.split(' ')
+    // const withoutRest = this.getPropsOrRest(props)
+    // const splitted = withoutRest.split(' ')
+    const splitted = props.split(' ')
 
     assertingPropsContainTypes(splitted, false)
 
     return splitted.map(item => {
       const replacedArrow = equalToDashArrow(item)
 
-      const [propName, propDefaultValue] = replacedArrow.split('=') as [string, string | undefined]
+      const [propName, propDefaultValue] = replacedArrow.split('=') as [
+        string,
+        string | undefined,
+      ]
 
       let defaultPropValue
-      if (propDefaultValue) defaultPropValue = dashToEqualArrow(propDefaultValue)
+      if (propDefaultValue)
+        defaultPropValue = dashToEqualArrow(propDefaultValue)
 
       return [propName, undefined, defaultPropValue]
     }) as Array<[string, undefined, string | undefined]>
@@ -276,6 +369,24 @@ export class Component {
     return arg
   }
 
+  private getAsComponent(arg: string): string {
+    if (arg.includes(' as-')) {
+      this.#props.as = true
+      return arg.replaceAll(' as-', '').replace(/\s\s+/g, ' ')
+    }
+
+    return arg
+  }
+
+  private getChildren(arg: string): string {
+    if (arg.includes('children')) {
+      this.#props.children = true
+      return arg.replaceAll('children', '').replace(/\s\s+/g, ' ')
+    }
+
+    return arg
+  }
+
   private cleanProps(props: string): string {
     const str = props
       .trim()
@@ -286,10 +397,15 @@ export class Component {
       .replace(/=\ /g, '=')
       .replace(/=>\ /g, '=>')
 
-    if (str.includes('rest=') || str.includes('rest:') || str.includes('props=') || str.includes('props:'))
+    if (
+      str.includes('rest=') ||
+      str.includes('rest:') ||
+      str.includes('props=') ||
+      str.includes('props:')
+    )
       throw new Error('Wrong rest or props')
 
-    return str
+    return this.getChildren(this.getAsComponent(this.getPropsOrRest(str)))
   }
 
   private getRawProps(props: string | undefined): {
@@ -307,7 +423,10 @@ export class Component {
     const cleanedProps = this.cleanProps(props)
 
     if (cleanedProps.includes(':')) {
-      const [typed, untyped] = cleanedProps.split(',') as [string, string | undefined]
+      const [typed, untyped] = cleanedProps.split(',') as [
+        string,
+        string | undefined,
+      ]
       return {
         propsTyped: typed.trim(),
         propsUntyped: untyped ? untyped.trim() : undefined,
@@ -332,7 +451,7 @@ export class Component {
     const arr: string[] = []
 
     if (config.ref) arr.push('import { forwardRef } from "react"')
-    if (config.cvax) arr.push('import { cvax, cn, VariantProps } from "cvax"')
+    if (config.cvax) arr.push('import { cvax, VariantProps } from "cvax"')
 
     return arr
   }
@@ -352,7 +471,8 @@ export class Component {
     if (this.#config.exports?.variants && this.#props.cvax.length)
       arr.push(`variants as ${uncapitalize(componentName)}Variants`)
 
-    if (this.#config.exports?.propsType) arr.push(`type Props as ${componentName}Props`)
+    if (this.#config.exports?.propsType)
+      arr.push(`type Props as ${componentName}Props`)
 
     return arr.filter(item => item.trim().length > 0)
   }
@@ -365,29 +485,20 @@ export class Component {
   }
 
   public renderIndex(): string {
-    if (this.#config.exports?.defaultExport) return `export default from "./${this.#componentName}"`
+    if (this.#config.exports?.defaultExport)
+      return `export default from "./${this.#componentName}"`
     return `export {${this.#componentName}} from "./${this.#componentName}"`
   }
 
   public renderStories(): string {
     return `
     import React from 'react'
-    import { ${this.#componentName} } from "./${this.#componentName}"
-    
     import type { Story } from "@ladle/react"
-    import type { ${this.#componentName}Props as Props } from "./${this.#componentName}"
-    import { ${uncapitalize(this.#componentName)}Config } from './${this.#componentName}'
-
-
-    // TODO: extract
-    function getOptions<T extends Record<string, string>>(arg: T): Array<keyof T> {
-      return (Object.keys(arg) as Array<keyof typeof arg>).map(key => key)
-    }
-
-    // TODO: extract
-    function getFirstValue<T extends object>(variants: T): keyof T {
-      return (Object.keys(variants) as Array<keyof T>)[0]
-    }
+    import { ${this.#componentName}, ${uncapitalize(
+      this.#componentName,
+    )}Config, type ${this.#componentName}Props as Props   } from "./${
+      this.#componentName
+    }"
 
     const { variants } = ${uncapitalize(this.#componentName)}Config
 
@@ -395,10 +506,18 @@ export class Component {
       title: "${this.#componentName}/Default"
     }
     
-    export const Default: Story<Props> = args => <${this.#componentName} {...args} />
-    Default.args = {  ${this.generateProps().join(',')} ${
-      this.#props.rest ? ', ...' + this.#props.rest : ''
-    }  } satisfies Props
+    export const Default: Story<Props> = props => ${
+      this.#props.children
+        ? `<${this.#componentName} {...props} >{props.children}</${
+            this.#componentName
+          }>`
+        : `<${this.#componentName} {...props} />`
+    }
+
+    Default.args = { 
+      ${this.#props.children ? 'children: <>children</>,' : ''}
+      ${this.generateStoriesProps().join(',')} 
+    } satisfies Props
     
     Default.argTypes = {
       ${this.#props.cvax.map(
@@ -411,6 +530,16 @@ export class Component {
         
       }`,
       )}
+    }
+
+    // TODO: extract
+    function getOptions<T extends Record<string, string>>(arg: T): Array<keyof T> {
+      return (Object.keys(arg) as Array<keyof typeof arg>).map(key => key)
+    }
+
+    // TODO: extract
+    function getFirstValue<T extends object>(variants: T): keyof T {
+      return (Object.keys(variants) as Array<keyof T>)[0]
     }
     `
   }
@@ -428,72 +557,6 @@ export class Component {
     });`
   }
 
-  public renderFunction(): string {
-    if (this.#config.ref) {
-      return `
-    ${this.#content.imports.join(';')};
-
-    ${this.#content.setup.join(';')};
-
-    ${this.#content.types.join(';')}
-
-    const ${this.#componentName} = ${this.#config.ref ? 'forwardRef<HTMLDivElement, Props>(' : ''}
-    ${
-      this.#config.exports?.inPlace?.component ? `export ${this.#config.exports?.defaultExport ? 'default' : ''}` : ''
-    } function ${this.#componentName} ({ ${this.#content.parameters} ${
-        this.#props.rest ? ', ...' + this.#props.rest : ''
-      } }  ${!this.#config.ref ? ': Props' : ''}
-       ${this.#config.ref ? ', ref ' : ''}
-      )  { return(<div ${this.#config.ref ? 'ref={ref}' : ''}
-          ${
-            this.#config.cvax
-              ? `className={cn(variants({ ${this.#props.cvax.map(item => `${item[0]}`).join(',')}}))}`
-              : ''
-          } />);}
-        ${this.#config.ref ? ') ' : ''};
-        ${
-          this.#config.printDisplayName
-            ? `${this.#componentName}.displayName = "${this.#displayName || this.#componentName}"`
-            : ''
-        }
-        
-        export { ${this.#content.exports.join(',')} }`
-    }
-
-    return `
-    ${this.#content.imports.join(';')};
-
-    ${this.#content.setup.join(';')};
-
-    ${this.#content.types.join(';')}
-
-    ${
-      this.#config.exports?.inPlace?.component ? `export ${this.#config.exports?.defaultExport ? 'default' : ''}` : ''
-    } function ${this.#componentName} 
-      ({ ${this.#content.parameters} ${this.#props.rest ? ', ...' + this.#props.rest : ''} }  ${
-      !this.#config.ref ? ': Props' : ''
-    }
-       ${this.#config.ref ? ', ref ' : ''}
-      )  {
-        return(
-          <div
-          ${this.#config.ref ? 'ref={ref}' : ''}
-          ${
-            this.#config.cvax
-              ? `className={cn(variants({ ${this.#props.cvax.map(item => `${item[0]}`).join(',')}}))}`
-              : ''
-          }
-           />);};
-        ${this.#config.ref ? ') ' : ''};
-        ${
-          this.#config.printDisplayName
-            ? `${this.#componentName}.displayName = "${this.#displayName || this.#componentName}"`
-            : ''
-        };
-
-        export { ${this.#content.exports.join(',')} };`
-  }
-
   public renderConst(): string {
     return `
     ${this.#content.imports.join(';')};
@@ -502,12 +565,17 @@ export class Component {
 
     ${this.#content.types.join(';')}
 
-    ${this.#config.exports?.inPlace?.component && !this.#config.exports?.defaultExport ? 'export' : ''} const ${
-      this.#componentName
-    } = ${this.#config.ref ? 'forwardRef<HTMLDivElement, Props>(' : ''}
-      ({ ${this.#content.parameters} ${this.#props.rest ? ', ...' + this.#props.rest : ''} }  ${
-      !this.#config.ref ? ': Props' : ''
+    ${
+      this.#config.exports?.inPlace?.component &&
+      !this.#config.exports?.defaultExport
+        ? 'export'
+        : ''
+    } const ${this.#componentName} = ${
+      this.#config.ref ? 'forwardRef<HTMLDivElement, Props>(' : ''
     }
+      ({ ${this.#content.parameters} ${
+      this.#props.rest ? ', ...' + this.#props.rest : ''
+    } }  ${!this.#config.ref ? ': Props' : ''}
        ${this.#config.ref ? ', ref ' : ''}
       ) => {
         return(
@@ -515,20 +583,106 @@ export class Component {
           ${this.#config.ref ? 'ref={ref}' : ''}
           ${
             this.#config.cvax
-              ? `className={cn(variants({ ${this.#props.cvax.map(item => `${item[0]}`).join(',')}}))}`
+              ? `className={variants({ ${this.#props.cvax
+                  .map(item => `${item[0]}`)
+                  .join(',')}})}`
               : ''
           }
           ${this.#props.rest ? ' {...' + this.#props.rest + '}' : ''}
-          />);}
+          ${this.#props.children ? '>{children}</div>);}' : '/>);}'}
         ${this.#config.ref ? ') ' : ''};
         ${
           this.#config.printDisplayName
-            ? `${this.#componentName}.displayName = "${this.#displayName || this.#componentName}"`
+            ? `${this.#componentName}.displayName = "${
+                this.#displayName || this.#componentName
+              }"`
             : ''
         };
 
         export {  ${
-          this.#config.exports?.defaultExport ? `${this.#componentName} as default,` : ''
+          this.#config.exports?.defaultExport
+            ? `${this.#componentName} as default,`
+            : ''
         } ${this.#content.exports.join(',')} };`
   }
+
+  // public renderFunction(): string {
+  //   if (this.#config.ref) {
+  //     return `
+  //   ${this.#content.imports.join(';')};
+
+  //   ${this.#content.setup.join(';')};
+
+  //   ${this.#content.types.join(';')}
+
+  //   const ${this.#componentName} = ${
+  //       this.#config.ref ? 'forwardRef<HTMLDivElement, Props>(' : ''
+  //     }
+  //   ${
+  //     this.#config.exports?.inPlace?.component
+  //       ? `export ${this.#config.exports?.defaultExport ? 'default' : ''}`
+  //       : ''
+  //   } function ${this.#componentName} ({ ${this.#content.parameters} ${
+  //       this.#props.rest ? ', ...' + this.#props.rest : ''
+  //     } }  ${!this.#config.ref ? ': Props' : ''}
+  //      ${this.#config.ref ? ', ref ' : ''}
+  //     )  { return(<div ${this.#config.ref ? 'ref={ref}' : ''}
+  //         ${
+  //           this.#config.cvax
+  //             ? `className={cn(variants({ ${this.#props.cvax
+  //                 .map(item => `${item[0]}`)
+  //                 .join(',')}}))}`
+  //             : ''
+  //         } />);}
+  //       ${this.#config.ref ? ') ' : ''};
+  //       ${
+  //         this.#config.printDisplayName
+  //           ? `${this.#componentName}.displayName = "${
+  //               this.#displayName || this.#componentName
+  //             }"`
+  //           : ''
+  //       }
+
+  //       export { ${this.#content.exports.join(',')} }`
+  //   }
+
+  //   return `
+  //   ${this.#content.imports.join(';')};
+
+  //   ${this.#content.setup.join(';')};
+
+  //   ${this.#content.types.join(';')}
+
+  //   ${
+  //     this.#config.exports?.inPlace?.component
+  //       ? `export ${this.#config.exports?.defaultExport ? 'default' : ''}`
+  //       : ''
+  //   } function ${this.#componentName}
+  //     ({ ${this.#content.parameters} ${
+  //     this.#props.rest ? ', ...' + this.#props.rest : ''
+  //   } }  ${!this.#config.ref ? ': Props' : ''}
+  //      ${this.#config.ref ? ', ref ' : ''}
+  //     )  {
+  //       return(
+  //         <div
+  //         ${this.#config.ref ? 'ref={ref}' : ''}
+  //         ${
+  //           this.#config.cvax
+  //             ? `className={cn(variants({ ${this.#props.cvax
+  //                 .map(item => `${item[0]}`)
+  //                 .join(',')}}))}`
+  //             : ''
+  //         }
+  //          />);};
+  //       ${this.#config.ref ? ') ' : ''};
+  //       ${
+  //         this.#config.printDisplayName
+  //           ? `${this.#componentName}.displayName = "${
+  //               this.#displayName || this.#componentName
+  //             }"`
+  //           : ''
+  //       };
+
+  //       export { ${this.#content.exports.join(',')} };`
+  // }
 }

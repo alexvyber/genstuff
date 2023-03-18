@@ -33,7 +33,7 @@
   "dependencies": {
     "@oclif/core": "^2.6.0",
     "@oclif/plugin-help": "^5.2.7",
-    "@oclif/plugin-plugins": "^2.4.0",
+    "@oclif/plugin-plugins": "^2.4.3",
     "prettier": "^2.8.4"
   },
   "devDependencies": {

@@ -31,7 +31,7 @@
     "publish": "npm publish"
   },
   "dependencies": {
-    "@oclif/core": "^2.6.0",
+    "@oclif/core": "^2.6.4",
     "@oclif/plugin-help": "^5.2.7",
     "@oclif/plugin-plugins": "^2.4.0",
     "prettier": "^2.8.4"

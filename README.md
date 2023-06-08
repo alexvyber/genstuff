@@ -22,7 +22,7 @@ $ npm install -g genstuff
 $ genstuff COMMAND
 running command...
 $ genstuff (--version)
-genstuff/0.0.0-alpha.17 linux-x64 node-v18.14.2
+genstuff/0.0.0-alpha.18 linux-x64 node-v18.13.0
 $ genstuff --help [COMMAND]
 USAGE
   $ genstuff COMMAND
@@ -33,7 +33,6 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`genstuff gen [COMPONENTNAME]`](#genstuff-gen-componentname)
 * [`genstuff help [COMMANDS]`](#genstuff-help-commands)
 * [`genstuff plugins`](#genstuff-plugins)
 * [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin)
@@ -44,46 +43,6 @@ USAGE
 * [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-1)
 * [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-2)
 * [`genstuff plugins update`](#genstuff-plugins-update)
-
-## `genstuff gen [COMPONENTNAME]`
-
-describe the command here
-
-```
-USAGE
-  $ genstuff gen [COMPONENTNAME] [-p <value>] [-s] [-D] [-P <value>] [-e <value>] [-f] [-x <value>]
-    [--display <value>] [--test] [--ref] [--no-variants] [--no-config] [--no-type] [--in-place] [--no-display]
-    [--pretty]
-
-ARGUMENTS
-  COMPONENTNAME  file to read
-
-FLAGS
-  -D, --defaultExport
-  -P, --path=<value>    [default: ui]
-  -e, --extend=<value>
-  -f, --force
-  -p, --props=<value>
-  -s, --stories
-  -x, --cvax=<value>
-  --display=<value>
-  --in-place
-  --no-config
-  --no-display
-  --no-type
-  --no-variants
-  --pretty
-  --ref
-  --test
-
-DESCRIPTION
-  describe the command here
-
-EXAMPLES
-  $ genstuff gen
-```
-
-_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.17/dist/commands/gen.ts)_
 
 ## `genstuff help [COMMANDS]`
 

@@ -55,5 +55,5 @@
 
 // TODO: extract
 function getOptions<T extends Record<string, string>>(arg: T): Array<keyof T> {
-  return (Object.keys(arg) as Array<keyof typeof arg>).map(key => key)
+  return (Object.keys(arg) as Array<keyof typeof arg>).map((key) => key)
 }

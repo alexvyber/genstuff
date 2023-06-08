@@ -14,7 +14,7 @@
 // import type { StoryDecorator } from "@ladle/react";
 
 export default {
-  stories: 'src/**/*.stories.{ts,tsx}',
+  stories: "src/**/*.stories.{ts,tsx}",
   appendToHead: `<style>.append {}</style>`,
   port: 9000,
 }

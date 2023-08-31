@@ -27,35 +27,38 @@
     "lint": "eslint . --ext .ts --config .eslintrc.js",
     "prepack": "pnpm build && oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",
-    "version": "oclif readme && git add README.md",
-    "publish": "npm publish"
+    "publish": "npm publish",
+    "version": "oclif readme && git add README.md"
   },
   "dependencies": {
-    "@oclif/core": "^2.6.0",
-    "@oclif/plugin-help": "^5.2.7",
-    "@oclif/plugin-plugins": "^2.4.0",
-    "liquidjs": "^10.8.2",
-    "prettier": "^2.8.4"
+    "@alexvyber/convert-case": "^0.0.2",
+    "@oclif/core": "^2.14.0",
+    "@oclif/plugin-help": "^5.2.18",
+    "@oclif/plugin-plugins": "^3.3.2",
+    "liquidjs": "^10.9.2"
   },
   "devDependencies": {
-    "@ladle/react": "^2.10.1",
-    "@oclif/test": "^2.3.9",
+    "@alexvyber/helpers": "0.0.0-development-2",
+    "@alexvyber/turbo-helpers-ladle": "0.0.0-dev-4",
+    "@alexvyber/turbo-helpers-tailwindcss": "0.0.0-dev-3",
+    "@alexvyber/turbo-helpers-types": "0.0.0-dev-4",
+    "@ladle/react": "^2.17.2",
+    "@oclif/test": "^2.4.8",
     "@testing-library/react": "^14.0.0",
-    "@types/chai": "^4.3.4",
-    "@types/node": "^18.14.6",
-    "@types/prettier": "^2.7.2",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "class-variance-authority": "^0.4.0",
-    "cvax": "0.2.2",
-    "oclif": "^3.7.0",
+    "@types/chai": "^4.3.5",
+    "@types/node": "^20.5.7",
+    "@types/prettier": "^3.0.0",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "cvax": "^0.6.1",
+    "oclif": "^3.12.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
-    "tslib": "^2.5.0",
-    "typescript": "4.9.5",
-    "vitest": "^0.29.2"
+    "tslib": "^2.6.2",
+    "typescript": "5.2.2",
+    "vitest": "^0.34.3"
   },
   "engines": {
     "node": ">=16.0.0"

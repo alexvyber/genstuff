@@ -1,5 +1,5 @@
 import { writeFile } from "node:fs/promises"
-import fs = require("node:fs")
+import fs from "node:fs"
 
 export function equalToDashArrow(arg: string) {
   return arg.replaceAll("=>", "->")

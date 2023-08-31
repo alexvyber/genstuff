@@ -1,6 +1,6 @@
 import { Args, Command, Flags } from "@oclif/core"
 import { Component } from "../lib/component"
-import fs = require("node:fs")
+import fs from "node:fs"
 import { exec } from "node:child_process"
 import { write } from "../lib/utils"
 
@@ -17,14 +17,20 @@ export default class Gen extends Command {
     force: Flags.boolean({ char: "f", default: false }),
     cvax: Flags.string({ char: "x" }),
     display: Flags.string(),
-    test: Flags.boolean(),
+    test: Flags.boolean({ char: "t" }),
     ref: Flags.boolean(),
-    // 'as-func': Flags.boolean({ default: false }),
+    "as-func": Flags.boolean({
+      description: "`const` or `function` component declaration",
+      default: false,
+    }),
     "no-variants": Flags.boolean(),
     "no-config": Flags.boolean(),
     "no-type": Flags.boolean(),
-    "in-place": Flags.boolean(),
-    "no-display": Flags.boolean(),
+    "in-place": Flags.boolean({
+      description: "export in-place: `export const componentName...`",
+      default: false,
+    }),
+    "no-display": Flags.boolean({ description: "no displayName with forwardRef", default: false }),
     pretty: Flags.boolean(),
   }
 
@@ -57,7 +63,10 @@ export default class Gen extends Command {
             }
           : undefined,
       },
+      as: flags["as-func"] ? "function" : "const",
     })
+
+    // component.state()
 
     if (!fs.existsSync(`src/components/${flags.path}`)) fs.mkdirSync(`src/components/${flags.path}`)
 
@@ -66,7 +75,7 @@ export default class Gen extends Command {
 
     write(
       `src/components/${flags.path}/${args.componentName}/${args.componentName}.tsx`,
-      component.renderConst(),
+      await component.renderMain(),
       flags.force
     )
 
@@ -91,6 +100,6 @@ export default class Gen extends Command {
     )
 
     // FIXME: rewrite to use prettier like normal human
-    flags.pretty && exec(`prettier --write src/components/${flags.path}/${args.componentName}/*`)
+    flags.pretty && exec(`rome format --write src/components/${flags.path}/${args.componentName}/*`)
   }
 }

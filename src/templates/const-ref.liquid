@@ -1,0 +1,16 @@
+{% if exportInPlace == true %}{% if exportDefault == true %}export default {% else %} export const {% endif %}{% else %}const {% endif %}{{ componentName }} = forwardRef<HTMLDivElement, Props>(({{ props }} , ref) => {  
+  return (
+    {% if children == true %}
+    <div ref={ref}
+    {{ className }}
+          {{ rest }}
+    >{children}</div>
+    {% else %}
+    <div ref={ref}
+    {{ className }}
+    {{ rest }} 
+    />
+    {% endif %}
+  )
+})
+{{ displayName }}

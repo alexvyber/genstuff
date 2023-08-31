@@ -1,0 +1,15 @@
+{% if exportInPlace == true %}{% if exportDefault == true %}export default function {% else %} export function {% endif %}{% else %}function {% endif %}{{ componentName }} ({{ props }}: Props) {  
+  return (
+    {% if children == true %}
+    <div 
+    {{ className }}
+          {{ rest }}
+    >{children}</div>
+    {% else %}
+    <div 
+    {{ className }}
+    {{ rest }} 
+    />
+    {% endif %}
+  )
+}

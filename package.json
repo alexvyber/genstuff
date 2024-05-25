@@ -1,68 +1,49 @@
 {
   "name": "genstuff",
-  "version": "0.0.0-alpha.18",
-  "description": "Generate best React components ever",
-  "keywords": [
-    "oclif"
-  ],
-  "homepage": "https://github.com/alexvyber/genstuff",
-  "bugs": "https://github.com/alexvyber/genstuff/issues",
-  "repository": "alexvyber/genstuff",
-  "license": "MIT",
-  "author": "Alexey Sokolov @alexvyber",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "Generate JS/TS/React code with ease",
+  "version": "0.0.0",
+  "author": "Alexey Sokolov",
   "bin": {
-    "genstuff": "./bin/run"
+    "genstuff": "./bin/run.js"
+  },
+  "bugs": "https://github.com/alexvyber/genstuff/issues",
+  "dependencies": {
+    "@oclif/core": "^3",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^5"
+  },
+  "devDependencies": {
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^4",
+    "@types/chai": "^4",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "chai": "^4",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9",
+    "mocha": "^10",
+    "oclif": "^4",
+    "shx": "^0.3.3",
+    "ts-node": "^10",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "files": [
     "/bin",
     "/dist",
-    "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
-    "clean": "shx rm -rf src/components && mkdir src/components",
-    "lint": "eslint . --ext .ts --config .eslintrc.js",
-    "prepack": "pnpm build && oclif manifest && oclif readme",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "publish": "npm publish",
-    "version": "oclif readme && git add README.md"
-  },
-  "dependencies": {
-    "@alexvyber/convert-case": "^0.0.2",
-    "@oclif/core": "^2.14.0",
-    "@oclif/plugin-help": "^5.2.18",
-    "@oclif/plugin-plugins": "^3.3.2",
-    "liquidjs": "^10.9.2"
-  },
-  "devDependencies": {
-    "@alexvyber/helpers": "0.0.0-development-2",
-    "@alexvyber/turbo-helpers-ladle": "0.0.0-dev-4",
-    "@alexvyber/turbo-helpers-tailwindcss": "0.0.0-dev-3",
-    "@alexvyber/turbo-helpers-types": "0.0.0-dev-4",
-    "@ladle/react": "^2.17.2",
-    "@oclif/test": "^2.4.8",
-    "@testing-library/react": "^14.0.0",
-    "@types/chai": "^4.3.5",
-    "@types/node": "^20.5.7",
-    "@types/prettier": "^3.0.0",
-    "@types/react": "^18.2.21",
-    "@types/react-dom": "^18.2.7",
-    "cvax": "^0.6.1",
-    "oclif": "^3.12.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "shx": "^0.3.4",
-    "ts-node": "^10.9.1",
-    "tslib": "^2.6.2",
-    "typescript": "5.2.2",
-    "vitest": "^0.34.3"
-  },
-  "engines": {
-    "node": ">=16.0.0"
-  },
+  "homepage": "https://github.com/alexvyber/genstuff",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "type": "module",
   "oclif": {
     "bin": "genstuff",
     "dirname": "genstuff",
@@ -77,5 +58,16 @@
         "description": "Say hello to the world and others"
       }
     }
-  }
+  },
+  "repository": "alexvyber/genstuff",
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "pnpm run lint",
+    "prepack": "oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md"
+  },
+  "types": "dist/index.d.ts"
 }

@@ -1,178 +1,190 @@
-# oclif-hello-world
+genstuff
+=================
 
-oclif example Hello World CLI
+Generate JS/TS/React code with ease
+
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/oclif-hello-world.svg)](https://npmjs.org/package/oclif-hello-world)
-[![CircleCI](https://circleci.com/gh/oclif/hello-world/tree/main.svg?style=shield)](https://circleci.com/gh/oclif/hello-world/tree/main)
-[![Downloads/week](https://img.shields.io/npm/dw/oclif-hello-world.svg)](https://npmjs.org/package/oclif-hello-world)
-[![License](https://img.shields.io/npm/l/oclif-hello-world.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
+[![Version](https://img.shields.io/npm/v/genstuff.svg)](https://npmjs.org/package/genstuff)
+[![Downloads/week](https://img.shields.io/npm/dw/genstuff.svg)](https://npmjs.org/package/genstuff)
+
 
 <!-- toc -->
-* [oclif-hello-world](#oclif-hello-world)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
-
 # Usage
-
 <!-- usage -->
 ```sh-session
-$ npm install -g genstuff
-$ genstuff COMMAND
+$ npm install -g mycli123
+$ mycli123 COMMAND
 running command...
-$ genstuff (--version)
-genstuff/0.0.0-alpha.18 linux-x64 node-v18.13.0
-$ genstuff --help [COMMAND]
+$ mycli123 (--version)
+mycli123/0.0.0 darwin-arm64 node-v20.12.2
+$ mycli123 --help [COMMAND]
 USAGE
-  $ genstuff COMMAND
+  $ mycli123 COMMAND
 ...
 ```
 <!-- usagestop -->
-
 # Commands
-
 <!-- commands -->
-* [`genstuff gen [COMPONENTNAME]`](#genstuff-gen-componentname)
-* [`genstuff help [COMMANDS]`](#genstuff-help-commands)
-* [`genstuff plugins`](#genstuff-plugins)
-* [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin)
-* [`genstuff plugins:inspect PLUGIN...`](#genstuff-pluginsinspect-plugin)
-* [`genstuff plugins:install PLUGIN...`](#genstuff-pluginsinstall-plugin-1)
-* [`genstuff plugins:link PLUGIN`](#genstuff-pluginslink-plugin)
-* [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin)
-* [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-1)
-* [`genstuff plugins:uninstall PLUGIN...`](#genstuff-pluginsuninstall-plugin-2)
-* [`genstuff plugins update`](#genstuff-plugins-update)
+* [`mycli123 hello PERSON`](#mycli123-hello-person)
+* [`mycli123 hello world`](#mycli123-hello-world)
+* [`mycli123 help [COMMAND]`](#mycli123-help-command)
+* [`mycli123 plugins`](#mycli123-plugins)
+* [`mycli123 plugins add PLUGIN`](#mycli123-plugins-add-plugin)
+* [`mycli123 plugins:inspect PLUGIN...`](#mycli123-pluginsinspect-plugin)
+* [`mycli123 plugins install PLUGIN`](#mycli123-plugins-install-plugin)
+* [`mycli123 plugins link PATH`](#mycli123-plugins-link-path)
+* [`mycli123 plugins remove [PLUGIN]`](#mycli123-plugins-remove-plugin)
+* [`mycli123 plugins reset`](#mycli123-plugins-reset)
+* [`mycli123 plugins uninstall [PLUGIN]`](#mycli123-plugins-uninstall-plugin)
+* [`mycli123 plugins unlink [PLUGIN]`](#mycli123-plugins-unlink-plugin)
+* [`mycli123 plugins update`](#mycli123-plugins-update)
 
-## `genstuff gen [COMPONENTNAME]`
+## `mycli123 hello PERSON`
 
-describe the command here
+Say hello
 
 ```
 USAGE
-  $ genstuff gen [COMPONENTNAME] [-p <value>] [-s] [-D] [-P <value>] [-e <value>] [-f] [-x <value>]
-    [--display <value>] [--test] [--ref] [--no-variants] [--no-config] [--no-type] [--in-place] [--no-display]
-    [--pretty]
+  $ mycli123 hello PERSON -f <value>
 
 ARGUMENTS
-  COMPONENTNAME  file to read
+  PERSON  Person to say hello to
 
 FLAGS
-  -D, --defaultExport
-  -P, --path=<value>    [default: ui]
-  -e, --extend=<value>
-  -f, --force
-  -p, --props=<value>
-  -s, --stories
-  -x, --cvax=<value>
-  --display=<value>
-  --in-place
-  --no-config
-  --no-display
-  --no-type
-  --no-variants
-  --pretty
-  --ref
-  --test
+  -f, --from=<value>  (required) Who is saying hello
 
 DESCRIPTION
-  describe the command here
+  Say hello
 
 EXAMPLES
-  $ genstuff gen
+  $ mycli123 hello friend --from oclif
+  hello friend from oclif! (./src/commands/hello/index.ts)
 ```
 
-_See code: [dist/commands/gen.ts](https://github.com/alexvyber/genstuff/blob/v0.0.0-alpha.18/dist/commands/gen.ts)_
+_See code: [src/commands/hello/index.ts](https://github.com/mdonnalley/mycli123/blob/v0.0.0/src/commands/hello/index.ts)_
 
-## `genstuff help [COMMANDS]`
+## `mycli123 hello world`
 
-Display help for genstuff.
+Say hello world
 
 ```
 USAGE
-  $ genstuff help [COMMANDS] [-n]
+  $ mycli123 hello world
+
+DESCRIPTION
+  Say hello world
+
+EXAMPLES
+  $ mycli123 hello world
+  hello world! (./src/commands/hello/world.ts)
+```
+
+_See code: [src/commands/hello/world.ts](https://github.com/mdonnalley/mycli123/blob/v0.0.0/src/commands/hello/world.ts)_
+
+## `mycli123 help [COMMAND]`
+
+Display help for mycli123.
+
+```
+USAGE
+  $ mycli123 help [COMMAND...] [-n]
 
 ARGUMENTS
-  COMMANDS  Command to show help for.
+  COMMAND...  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
 
 DESCRIPTION
-  Display help for genstuff.
+  Display help for mycli123.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.7/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.0.21/src/commands/help.ts)_
 
-## `genstuff plugins`
+## `mycli123 plugins`
 
 List installed plugins.
 
 ```
 USAGE
-  $ genstuff plugins [--core]
+  $ mycli123 plugins [--json] [--core]
 
 FLAGS
   --core  Show core plugins.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   List installed plugins.
 
 EXAMPLES
-  $ genstuff plugins
+  $ mycli123 plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.16/src/commands/plugins/index.ts)_
 
-## `genstuff plugins:install PLUGIN...`
+## `mycli123 plugins add PLUGIN`
 
-Installs a plugin into the CLI.
+Installs a plugin into mycli123.
 
 ```
 USAGE
-  $ genstuff plugins:install PLUGIN...
+  $ mycli123 plugins add PLUGIN... [--json] [-f] [-h] [-s | -v]
 
 ARGUMENTS
-  PLUGIN  Plugin to install.
+  PLUGIN...  Plugin to install.
 
 FLAGS
-  -f, --force    Run yarn install with force flag.
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
   -h, --help     Show CLI help.
-  -v, --verbose
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  Installs a plugin into the CLI.
-  Can be installed from npm or a git url.
+  Installs a plugin into mycli123.
+
+  Uses bundled npm executable to install plugins into /Users/mdonnalley/.local/share/mycli123
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
+  Use the MYCLI123_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the MYCLI123_NPM_REGISTRY environment variable to set the npm registry.
 
 ALIASES
-  $ genstuff plugins add
+  $ mycli123 plugins add
 
 EXAMPLES
-  $ genstuff plugins:install myplugin 
+  Install a plugin from npm registry.
 
-  $ genstuff plugins:install https://github.com/someuser/someplugin
+    $ mycli123 plugins add myplugin
 
-  $ genstuff plugins:install someuser/someplugin
+  Install a plugin from a github url.
+
+    $ mycli123 plugins add https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ mycli123 plugins add someuser/someplugin
 ```
 
-## `genstuff plugins:inspect PLUGIN...`
+## `mycli123 plugins:inspect PLUGIN...`
 
 Displays installation properties of a plugin.
 
 ```
 USAGE
-  $ genstuff plugins:inspect PLUGIN...
+  $ mycli123 plugins inspect PLUGIN...
 
 ARGUMENTS
-  PLUGIN  [default: .] Plugin to inspect.
+  PLUGIN...  [default: .] Plugin to inspect.
 
 FLAGS
   -h, --help     Show CLI help.
@@ -185,61 +197,75 @@ DESCRIPTION
   Displays installation properties of a plugin.
 
 EXAMPLES
-  $ genstuff plugins:inspect myplugin
+  $ mycli123 plugins inspect myplugin
 ```
 
-## `genstuff plugins:install PLUGIN...`
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.16/src/commands/plugins/inspect.ts)_
 
-Installs a plugin into the CLI.
+## `mycli123 plugins install PLUGIN`
+
+Installs a plugin into mycli123.
 
 ```
 USAGE
-  $ genstuff plugins:install PLUGIN...
+  $ mycli123 plugins install PLUGIN... [--json] [-f] [-h] [-s | -v]
 
 ARGUMENTS
-  PLUGIN  Plugin to install.
+  PLUGIN...  Plugin to install.
 
 FLAGS
-  -f, --force    Run yarn install with force flag.
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
   -h, --help     Show CLI help.
-  -v, --verbose
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  Installs a plugin into the CLI.
-  Can be installed from npm or a git url.
+  Installs a plugin into mycli123.
+
+  Uses bundled npm executable to install plugins into /Users/mdonnalley/.local/share/mycli123
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
+  Use the MYCLI123_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the MYCLI123_NPM_REGISTRY environment variable to set the npm registry.
 
 ALIASES
-  $ genstuff plugins add
+  $ mycli123 plugins add
 
 EXAMPLES
-  $ genstuff plugins:install myplugin 
+  Install a plugin from npm registry.
 
-  $ genstuff plugins:install https://github.com/someuser/someplugin
+    $ mycli123 plugins install myplugin
 
-  $ genstuff plugins:install someuser/someplugin
+  Install a plugin from a github url.
+
+    $ mycli123 plugins install https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ mycli123 plugins install someuser/someplugin
 ```
 
-## `genstuff plugins:link PLUGIN`
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.16/src/commands/plugins/install.ts)_
+
+## `mycli123 plugins link PATH`
 
 Links a plugin into the CLI for development.
 
 ```
 USAGE
-  $ genstuff plugins:link PLUGIN
+  $ mycli123 plugins link PATH [-h] [--install] [-v]
 
 ARGUMENTS
   PATH  [default: .] path to plugin
 
 FLAGS
-  -h, --help     Show CLI help.
+  -h, --help          Show CLI help.
   -v, --verbose
+      --[no-]install  Install dependencies after linking the plugin.
 
 DESCRIPTION
   Links a plugin into the CLI for development.
@@ -250,19 +276,21 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ genstuff plugins:link myplugin
+  $ mycli123 plugins link myplugin
 ```
 
-## `genstuff plugins:uninstall PLUGIN...`
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.16/src/commands/plugins/link.ts)_
+
+## `mycli123 plugins remove [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ genstuff plugins:uninstall PLUGIN...
+  $ mycli123 plugins remove [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN  plugin to uninstall
+  PLUGIN...  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -272,20 +300,38 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ genstuff plugins unlink
-  $ genstuff plugins remove
+  $ mycli123 plugins unlink
+  $ mycli123 plugins remove
+
+EXAMPLES
+  $ mycli123 plugins remove myplugin
 ```
 
-## `genstuff plugins:uninstall PLUGIN...`
+## `mycli123 plugins reset`
+
+Remove all user-installed and linked plugins.
+
+```
+USAGE
+  $ mycli123 plugins reset [--hard] [--reinstall]
+
+FLAGS
+  --hard       Delete node_modules and package manager related files in addition to uninstalling plugins.
+  --reinstall  Reinstall all plugins after uninstalling.
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.16/src/commands/plugins/reset.ts)_
+
+## `mycli123 plugins uninstall [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ genstuff plugins:uninstall PLUGIN...
+  $ mycli123 plugins uninstall [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN  plugin to uninstall
+  PLUGIN...  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -295,20 +341,25 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ genstuff plugins unlink
-  $ genstuff plugins remove
+  $ mycli123 plugins unlink
+  $ mycli123 plugins remove
+
+EXAMPLES
+  $ mycli123 plugins uninstall myplugin
 ```
 
-## `genstuff plugins:uninstall PLUGIN...`
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.16/src/commands/plugins/uninstall.ts)_
+
+## `mycli123 plugins unlink [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ genstuff plugins:uninstall PLUGIN...
+  $ mycli123 plugins unlink [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN  plugin to uninstall
+  PLUGIN...  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -318,17 +369,20 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ genstuff plugins unlink
-  $ genstuff plugins remove
+  $ mycli123 plugins unlink
+  $ mycli123 plugins remove
+
+EXAMPLES
+  $ mycli123 plugins unlink myplugin
 ```
 
-## `genstuff plugins update`
+## `mycli123 plugins update`
 
 Update installed plugins.
 
 ```
 USAGE
-  $ genstuff plugins update [-h] [-v]
+  $ mycli123 plugins update [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -337,4 +391,6 @@ FLAGS
 DESCRIPTION
   Update installed plugins.
 ```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.16/src/commands/plugins/update.ts)_
 <!-- commandsstop -->

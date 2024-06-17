@@ -1,41 +1,47 @@
-import { Args, Command, Flags } from "@oclif/core"
+import { Args, Command, Errors, Flags } from "@oclif/core"
+import { GeneratorCommand } from "../../generator.js"
+import { join } from "node:path"
+import { pascalCase, snakeCase } from "change-case"
 
-export default class ReactComponent extends Command {
+export default class ReactComponent extends GeneratorCommand<typeof ReactComponent> {
   static override args = {
-    name: Args.string({ description: "component name" }),
+    name: Args.string({ description: "component name", required: true }),
   }
 
-  static override description = "describe the command here"
+  static override description = "Generate react component"
 
   static override examples = ["<%= config.bin %> <%= command.id %>"]
 
   static override flags = {
-    props: Flags.string({ char: "p" }),
+    props: Flags.string({ char: "p", default: undefined }),
 
-    stories: Flags.boolean({ char: "s" }),
+    story: Flags.boolean({ char: "s", default: false }),
 
-    test: Flags.boolean({ char: "t" }),
+    test: Flags.boolean({ char: "t", default: false }),
 
-    defaultExport: Flags.boolean({ char: "D" }),
+    defaultExport: Flags.boolean({ char: "D", default: false }),
 
-    path: Flags.string(),
+    path: Flags.string({ default: undefined }),
 
     force: Flags.boolean({ char: "f", default: false }),
 
-    cvax: Flags.string(),
+    cvax: Flags.string({ default: undefined }),
 
-    displayName: Flags.string(),
+    displayName: Flags.string({ default: undefined }),
 
-    rsc: Flags.boolean(),
+    client: Flags.boolean({ default: false }),
   }
 
-  public async run(): Promise<void> {
-    const { args, flags } = await this.parse(ReactComponent)
+  async run(): Promise<void> {
+    const destination = join(process.cwd(), `${snakeCase(this.args.name)}.tsx`)
 
-    const name = flags.name ?? "world"
-    this.log(`hello ${name} from /Users/alexs/@alexvyber/genstuff/src/commands/react/component.ts`)
-    if (args.name && flags.force) {
-      this.log(`you input --force and --name: ${args.name}`)
+    const opts = {
+      className: pascalCase(this.args.name),
+      name: this.args.name,
+      path: destination,
+      type: "command",
     }
+
+    await this.template(join(this.templatesDir, "react", "function-component.tsx.ejs"), destination, opts)
   }
 }

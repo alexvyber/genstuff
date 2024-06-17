@@ -6,7 +6,44 @@
     "rules": {
       "recommended": true,
       "style": {
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "info",
+        "useBlockStatements": "error",
+        "noUselessElse": "error",
+        "noCommaOperator": "error",
+        "noDefaultExport": "warn",
+        "noImplicitBoolean": "error",
+        "noInferrableTypes": "warn",
+        "noNegationElse": "warn",
+        "noParameterAssign": "error",
+        "noRestrictedGlobals": "warn",
+        "noShoutyConstants": "warn",
+        "noUnusedTemplateLiteral": "warn",
+        "noVar": "error",
+        "useAsConstAssertion": "warn",
+        "useCollapsedElseIf": "warn",
+        "useConsistentArrayType": "error",
+        "useWhile": "error",
+        "useTemplate": "error",
+        "useSingleVarDeclarator": "error",
+        "useSingleCaseStatement": "error",
+        "useShorthandFunctionType": "error",
+        "useShorthandAssign": "info",
+        "useShorthandArrayType": "error",
+        "useSelfClosingElements": "info",
+        "useNumericLiterals": "error",
+        "useNumberNamespace": "error",
+        "useNodejsImportProtocol": "error",
+        "useNodeAssertStrict": "error",
+        "useNamingConvention": "error",
+        "useLiteralEnumMembers": "error",
+        "useImportType": "error",
+        "useFragmentSyntax": "error",
+        "useForOf": "warn",
+        "useFilenamingConvention": "info",
+        "useExportType": "error",
+        "useExponentiationOperator": "error",
+        "useEnumInitializers": "error",
+        "useDefaultParameterLast": "error"
       },
       "suspicious": {
         "noExplicitAny": "off",
@@ -19,7 +56,8 @@
     "lineWidth": 120,
     "indentStyle": "space",
     "indentWidth": 2,
-    "ignore": ["dist", "build", "node_modules"]
+    "ignore": ["dist", "build", "node_modules"],
+    "attributePosition": "multiline"
   },
   "javascript": {
     "formatter": {

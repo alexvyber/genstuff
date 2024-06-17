@@ -1,7 +1,7 @@
 import { Args, Command, Errors, Flags } from "@oclif/core"
 import { GeneratorCommand } from "../../generator.js"
 import { join } from "node:path"
-import { pascalCase, snakeCase } from "change-case"
+import { camelCase, kebabCase, pascalCase, snakeCase } from "change-case"
 
 export default class ReactComponent extends GeneratorCommand<typeof ReactComponent> {
   static override args = {
@@ -30,10 +30,14 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
     displayName: Flags.string({ default: undefined }),
 
     client: Flags.boolean({ default: false }),
+
+    arrow: Flags.boolean({ default: false }),
+
+    class: Flags.boolean({ default: false }),
   }
 
   async run(): Promise<void> {
-    const destination = join(process.cwd(), `${snakeCase(this.args.name)}.tsx`)
+    const destination = join(process.cwd(), `${kebabCase(this.args.name)}.tsx`)
 
     const opts = {
       className: pascalCase(this.args.name),
@@ -42,6 +46,7 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
       type: "command",
     }
 
-    await this.template(join(this.templatesDir, "react", "function-component.tsx.ejs"), destination, opts)
+    const templateFile = `component-${this.flags.class ? "class" : this.flags.arrow ? "arrow" : "function"}.tsx.ejs`
+    await this.template(join(this.templatesDir, "react", templateFile), destination, opts)
   }
 }

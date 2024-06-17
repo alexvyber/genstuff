@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.4.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
   "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
@@ -13,25 +13,19 @@
         "noEmptyInterface": "off"
       }
     },
-    "ignore": ["dist", "build", "node_modules", "src/components/icons", "src/store/services", "src/lib/tmp/**/*.json"]
+    "ignore": ["dist", "build", "node_modules"]
   },
   "formatter": {
     "lineWidth": 120,
     "indentStyle": "space",
     "indentWidth": 2,
-    "ignore": ["dist", "build", "node_modules", "src/lib/tmp/**/*.json", "package.json"]
+    "ignore": ["dist", "build", "node_modules"]
   },
   "javascript": {
     "formatter": {
-      "semicolons": "always",
-      "trailingComma": "es5",
+      "semicolons": "asNeeded",
+      "trailingCommas": "es5",
       "arrowParentheses": "always"
     }
-  },
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true,
-    "root": "./"
   }
 }

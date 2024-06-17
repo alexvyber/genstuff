@@ -1,7 +1,7 @@
 genstuff
 =================
 
-Generate JS/TS/React code with ease
+A new CLI generated with oclif
 
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)

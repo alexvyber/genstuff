@@ -1,8 +1,8 @@
 import { Command, type Interfaces } from "@oclif/core"
 import chalk from "chalk"
-import { existsSync } from "fs"
+import { existsSync } from "node:fs"
 import { renderFile } from "ejs"
-import { join, relative } from "path"
+import { join, relative } from "node:path"
 import { outputFile } from "fs-extra"
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T["args"]>
@@ -54,11 +54,17 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
    * - Prompt the user for a value
    */
   public async getFlagOrPrompt({ defaultValue, maybeOtherValue, name, type }: GetFlagOrPromptOptions): Promise<string> {
-    if (!this.flaggablePrompts) throw new Error("No flaggable prompts defined")
-    if (!this.flaggablePrompts[name]) throw new Error(`No flaggable prompt defined for ${name}`)
+    if (!this.flaggablePrompts) {
+      throw new Error("No flaggable prompts defined")
+    }
+    if (!this.flaggablePrompts[name]) {
+      throw new Error(`No flaggable prompt defined for ${name}`)
+    }
 
     const maybeFlag = () => {
-      if (!this.flags[name]) return
+      if (!this.flags[name]) {
+        return
+      }
 
       this.log(`${chalk.green("?")} ${chalk.bold(this.flaggablePrompts[name].message)} ${chalk.cyan(this.flags[name])}`)
 
@@ -66,18 +72,23 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
     }
 
     const maybeDefault = () => {
-      if (!this.flags.yes)
+      if (!this.flags.yes) {
         this.log(`${chalk.green("?")} ${chalk.bold(this.flaggablePrompts[name].message)} ${chalk.cyan(defaultValue)}`)
+      }
 
       return defaultValue
     }
 
     const checkMaybeOtherValue = async () => {
-      if (!maybeOtherValue) return
+      if (!maybeOtherValue) {
+        return
+      }
 
       const otherValue = await maybeOtherValue()
 
-      if (!otherValue) return
+      if (!otherValue) {
+        return
+      }
 
       this.log(`${chalk.green("?")} ${chalk.bold(this.flaggablePrompts[name].message)} ${chalk.cyan(otherValue)}`)
 
@@ -140,7 +151,9 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
   public async template(source: string, destination: string, data?: Record<string, unknown>): Promise<void> {
     const rendered = await new Promise<string>((resolve, reject) =>
       renderFile(source, data ?? {}, (err, str) => {
-        if (err) reject(err)
+        if (err) {
+          reject(err)
+        }
         return resolve(str)
       })
     )

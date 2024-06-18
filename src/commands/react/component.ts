@@ -1,7 +1,7 @@
-import { Args, Command, Errors, Flags } from "@oclif/core"
+import { Args, Flags } from "@oclif/core"
 import { GeneratorCommand } from "../../generator.js"
 import { join } from "node:path"
-import { camelCase, kebabCase, pascalCase, snakeCase } from "change-case"
+import { kebabCase, pascalCase } from "change-case"
 
 export default class ReactComponent extends GeneratorCommand<typeof ReactComponent> {
   static override args = {

@@ -1,7 +1,8 @@
 import { Args, Flags } from "@oclif/core"
 import { GeneratorCommand } from "../../generator.js"
+import { kebabCase } from "change-case"
 import { join } from "node:path"
-import { kebabCase, pascalCase } from "change-case"
+
 
 export default class ReactComponent extends GeneratorCommand<typeof ReactComponent> {
   static override args = {
@@ -14,25 +15,15 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
 
   static override flags = {
     props: Flags.string({ char: "p", default: undefined }),
-
     story: Flags.boolean({ char: "s", default: false }),
-
     test: Flags.boolean({ char: "t", default: false }),
-
     defaultExport: Flags.boolean({ char: "D", default: false }),
-
     path: Flags.string({ default: undefined }),
-
     force: Flags.boolean({ char: "f", default: false }),
-
     cvax: Flags.string({ default: undefined }),
-
     displayName: Flags.string({ default: undefined }),
-
     client: Flags.boolean({ default: false }),
-
     arrow: Flags.boolean({ default: false }),
-
     class: Flags.boolean({ default: false }),
   }
 
@@ -40,7 +31,6 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
     const destination = join(process.cwd(), `${kebabCase(this.args.name)}.tsx`)
 
     const opts = {
-      className: pascalCase(this.args.name),
       name: this.args.name,
       path: destination,
       type: "command",

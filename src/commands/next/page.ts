@@ -1,6 +1,7 @@
-import { Args, Command, Flags } from "@oclif/core"
+import { Args, Flags } from "@oclif/core"
+import { GeneratorCommand } from "../../generator.js"
 
-export default class NextPage extends Command {
+export default class NextPage extends GeneratorCommand<typeof NextPage> {
   static override args = {
     file: Args.string({ description: "file to read" }),
   }
@@ -10,9 +11,7 @@ export default class NextPage extends Command {
   static override examples = ["<%= config.bin %> <%= command.id %>"]
 
   static override flags = {
-    // flag with no value (-f, --force)
     force: Flags.boolean({ char: "f" }),
-    // flag with a value (-n, --name=VALUE)
     name: Flags.string({ char: "n", description: "name to print" }),
   }
 

@@ -39,10 +39,10 @@ export type GetFlagOrPromptOptions = {
 
 export abstract class GeneratorCommand<T extends typeof Command> extends Command {
   protected args!: Args<T>
-  protected flaggablePrompts!: Record<string, FlaggablePrompt>
-
   protected flags!: Flags<T>
   public templatesDir!: string
+
+  protected flaggablePrompts!: Record<string, FlaggablePrompt>
 
   /**
    * Get a flag value or prompt the user for a value.
@@ -57,6 +57,7 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
     if (!this.flaggablePrompts) {
       throw new Error("No flaggable prompts defined")
     }
+
     if (!this.flaggablePrompts[name]) {
       throw new Error(`No flaggable prompt defined for ${name}`)
     }
@@ -95,38 +96,35 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
       return otherValue
     }
 
-    switch (type) {
-      case "select":
-        return (
-          maybeFlag() ??
-          (await checkMaybeOtherValue()) ??
-          maybeDefault() ??
-          // Dynamic import because @inquirer/select is ESM only. Once oclif is ESM, we can make this a normal import
-          // so that we can avoid importing on every single question.
-          (await import("@inquirer/select")).default({
-            choices: (this.flaggablePrompts[name].options ?? []).map((o) => ({ name: o, value: o })),
-            default: defaultValue,
-            message: this.flaggablePrompts[name].message,
-          })
-        )
-
-      case "input":
-        return (
-          maybeFlag() ??
-          (await checkMaybeOtherValue()) ??
-          maybeDefault() ??
-          // Dynamic import because @inquirer/input is ESM only. Once oclif is ESM, we can make this a normal import
-          // so that we can avoid importing on every single question.
-          (await import("@inquirer/input")).default({
-            default: defaultValue,
-            message: this.flaggablePrompts[name].message,
-            validate: this.flaggablePrompts[name].validate,
-          })
-        )
-
-      default:
-        throw new Error("Invalid type")
+    if (type === "select") {
+      return (
+        maybeFlag() ??
+        (await checkMaybeOtherValue()) ??
+        maybeDefault() ??
+        // Dynamic import because @inquirer/select is ESM only.
+        (await import("@inquirer/select")).default({
+          choices: (this.flaggablePrompts[name].options ?? []).map((o) => ({ name: o, value: o })),
+          default: defaultValue,
+          message: this.flaggablePrompts[name].message,
+        })
+      )
     }
+
+    if (type === "input") {
+      return (
+        maybeFlag() ??
+        (await checkMaybeOtherValue()) ??
+        maybeDefault() ??
+        // Dynamic import because @inquirer/input is ESM only.
+        (await import("@inquirer/input")).default({
+          default: defaultValue,
+          message: this.flaggablePrompts[name].message,
+          validate: this.flaggablePrompts[name].validate,
+        })
+      )
+    }
+
+    throw new Error("Invalid type")
   }
 
   public async init(): Promise<void> {
@@ -158,26 +156,26 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
       })
     )
 
-    let verb = "Creating"
+    if (!rendered) {
+      return
+    }
 
-    if (rendered) {
-      const relativePath = relative(process.cwd(), destination)
+    const relativePath = relative(process.cwd(), destination)
 
-      if (existsSync(destination)) {
-        const confirmation =
-          this.flags.force ??
-          (await (await import("@inquirer/confirm")).default({ message: `Overwrite ${relativePath}?` }))
-
-        if (!confirmation) {
-          this.log(`${chalk.yellow("Skipping")} ${relativePath}`)
-          return
-        }
-
-        verb = "Overwriting"
-      }
-
-      this.log(`${chalk.yellow(verb)} ${relativePath}`)
+    if (!existsSync(destination)) {
+      this.log(`${chalk.yellow("Creating")} ${relativePath}`)
       await outputFile(destination, rendered)
     }
+
+    const confirmation =
+      this.flags.force ?? (await (await import("@inquirer/confirm")).default({ message: `Overwrite ${relativePath}?` }))
+
+    if (!confirmation) {
+      this.log(`${chalk.yellow("Skipping")} ${relativePath}`)
+      return
+    }
+
+    this.log(`${chalk.yellow("Overwriting")} ${relativePath}`)
+    await outputFile(destination, rendered)
   }
 }

@@ -1,12 +1,42 @@
 {
   "name": "genstuff",
-  "description": "A new CLI generated with oclif",
   "version": "0.0.0",
+  "description": "A new CLI generated with oclif",
+  "keywords": ["oclif"],
+  "homepage": "https://github.com/@alexvyber/genstuff",
+  "bugs": "https://github.com/@alexvyber/genstuff/issues",
+  "repository": "@alexvyber/genstuff",
+  "license": "MIT",
   "author": "Alexey Sokolov",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "genstuff": "./bin/run.js"
   },
-  "bugs": "https://github.com/@alexvyber/genstuff/issues",
+  "files": ["/bin", "/dist", "/oclif.manifest.json"],
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": " biome lint --write --unsafe .",
+    "format": "biome format --write .",
+    "prepack": "oclif manifest && oclif readme",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "posttest": "pnpm run lint",
+    "version": "oclif readme && git add README.md"
+  },
+  "oclif": {
+    "bin": "genstuff",
+    "commands": "./dist/commands",
+    "dirname": "genstuff",
+    "plugins": ["@oclif/plugin-help", "@oclif/plugin-plugins"],
+    "topicSeparator": " ",
+    "topics": {
+      "hello": {
+        "description": "Say hello to the world and others"
+      }
+    }
+  },
   "dependencies": {
     "@inquirer/confirm": "^3.1.9",
     "@inquirer/input": "^2.1.9",
@@ -38,37 +68,8 @@
     "ts-node": "^10",
     "typescript": "^5"
   },
+  "packageManager": "pnpm@8.15.1+sha1.8adba2d20330c02d3856e18c4eb3819d1d3ca6aa",
   "engines": {
     "node": ">=18.0.0"
-  },
-  "files": ["/bin", "/dist", "/oclif.manifest.json"],
-  "homepage": "https://github.com/@alexvyber/genstuff",
-  "keywords": ["oclif"],
-  "license": "MIT",
-  "main": "dist/index.js",
-  "type": "module",
-  "oclif": {
-    "bin": "genstuff",
-    "dirname": "genstuff",
-    "commands": "./dist/commands",
-    "plugins": ["@oclif/plugin-help", "@oclif/plugin-plugins"],
-    "topicSeparator": " ",
-    "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
-      }
-    }
-  },
-  "repository": "@alexvyber/genstuff",
-  "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
-    "lint": "eslint . --ext .ts",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "pnpm run lint",
-    "prepack": "oclif manifest && oclif readme",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif readme && git add README.md"
-  },
-  "types": "dist/index.d.ts",
-  "packageManager": "pnpm@8.15.1+sha1.8adba2d20330c02d3856e18c4eb3819d1d3ca6aa"
+  }
 }

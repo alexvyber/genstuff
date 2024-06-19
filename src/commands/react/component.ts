@@ -3,7 +3,6 @@ import { GeneratorCommand } from "../../generator.js"
 import { kebabCase } from "change-case"
 import { join } from "node:path"
 
-
 export default class ReactComponent extends GeneratorCommand<typeof ReactComponent> {
   static override args = {
     name: Args.string({ description: "component name", required: true }),

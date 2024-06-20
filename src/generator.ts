@@ -164,7 +164,7 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
 
     if (!existsSync(destination)) {
       this.log(`${chalk.yellow("Creating")} ${relativePath}`)
-      await outputFile(destination, rendered)
+      return outputFile(destination, rendered)
     }
 
     const confirmation =

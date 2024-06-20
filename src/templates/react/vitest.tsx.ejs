@@ -1,0 +1,12 @@
+import { describe, it } from 'vitest'
+import { render, screen } from '@testing-library/react';
+
+import { <%- name %> } from '.';
+
+describe('<%- name %>', () => {
+  it('renders', () => {
+    render(<<%- name %> />);
+
+    // check if component renders
+  });
+});

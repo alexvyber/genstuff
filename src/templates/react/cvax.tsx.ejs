@@ -1,0 +1,14 @@
+import { cvax, VariantProps } from 'cvax';
+
+const <%- name %>Variants = cvax({
+    base: "",
+    variants: {},
+    defaultVariants: {},
+    compoundVariants: []
+})
+
+type <%- name %>Props = VariantProps<typeof <%- name %>Variants>
+
+export { <%- name %>Variants }
+export type { <%- name %>Props }
+

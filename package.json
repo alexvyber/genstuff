@@ -2,9 +2,7 @@
   "name": "genstuff",
   "version": "0.0.0",
   "description": "A new CLI generated with oclif",
-  "keywords": [
-    "oclif"
-  ],
+  "keywords": ["oclif"],
   "homepage": "https://github.com/@alexvyber/genstuff",
   "bugs": "https://github.com/@alexvyber/genstuff/issues",
   "repository": "@alexvyber/genstuff",
@@ -16,11 +14,7 @@
   "bin": {
     "genstuff": "./bin/run.js"
   },
-  "files": [
-    "/bin",
-    "/dist",
-    "/oclif.manifest.json"
-  ],
+  "files": ["/bin", "/dist", "/oclif.manifest.json"],
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
     "lint": " biome lint --write --unsafe .",
@@ -35,10 +29,7 @@
     "bin": "genstuff",
     "commands": "./dist/commands",
     "dirname": "genstuff",
-    "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
-    ],
+    "plugins": ["@oclif/plugin-help", "@oclif/plugin-plugins"],
     "topicSeparator": " ",
     "topics": {
       "hello": {

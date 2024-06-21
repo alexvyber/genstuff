@@ -64,7 +64,6 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
       })
     }
 
-
     if (this.flags.cvax) {
       const cvaxPath = join(process.cwd(), kebabCase(this.args.name), `${kebabCase(this.args.name)}.variants.ts`)
 
@@ -72,6 +71,5 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
         name: this.args.name,
       })
     }
-    
   }
 }

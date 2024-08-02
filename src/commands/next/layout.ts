@@ -18,8 +18,6 @@ export default class NextLayout extends GeneratorCommand<typeof NextLayout> {
   public async run(): Promise<void> {
     const { args, flags } = await this.parse(NextLayout)
 
-    const name = flags.name ?? "world"
-    this.log(`hello ${name} from /Users/alexs/@alexvyber/genstuff/src/commands/next/layout.ts`)
     if (args.file && flags.force) {
       this.log(`you input --force and --file: ${args.file}`)
     }

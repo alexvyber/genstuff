@@ -18,8 +18,6 @@ export default class ReactContext extends GeneratorCommand<typeof ReactContext> 
   public async run(): Promise<void> {
     const { args, flags } = await this.parse(ReactContext)
 
-    const name = flags.name ?? "world"
-    this.log(`hello ${name} from /Users/alexs/@alexvyber/genstuff/src/commands/react/context.ts`)
     if (args.file && flags.force) {
       this.log(`you input --force and --file: ${args.file}`)
     }

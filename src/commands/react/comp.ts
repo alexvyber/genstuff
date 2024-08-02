@@ -51,25 +51,19 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
     if (this.flags.story) {
       const storyPath = join(process.cwd(), kebabCase(this.args.name), `${kebabCase(this.args.name)}.stories.tsx`)
 
-      await this.template(join(this.templatesDir, "react", "storybook.tsx.ejs"), storyPath, {
-        name: this.args.name,
-      })
+      await this.template(join(this.templatesDir, "react", "storybook.tsx.ejs"), storyPath, { name: this.args.name })
     }
 
     if (this.flags.test) {
       const testPath = join(process.cwd(), kebabCase(this.args.name), `${kebabCase(this.args.name)}.test.tsx`)
 
-      await this.template(join(this.templatesDir, "react", "vitest.tsx.ejs"), testPath, {
-        name: this.args.name,
-      })
+      await this.template(join(this.templatesDir, "react", "vitest.tsx.ejs"), testPath, { name: this.args.name })
     }
 
     if (this.flags.cvax) {
       const cvaxPath = join(process.cwd(), kebabCase(this.args.name), `${kebabCase(this.args.name)}.variants.ts`)
 
-      await this.template(join(this.templatesDir, "react", "cvax.tsx.ejs"), cvaxPath, {
-        name: this.args.name,
-      })
+      await this.template(join(this.templatesDir, "react", "cvax.tsx.ejs"), cvaxPath, { name: this.args.name })
     }
   }
 }

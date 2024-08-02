@@ -1,6 +1,6 @@
 {
   "name": "genstuff",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A new CLI generated with oclif",
   "keywords": ["oclif"],
   "homepage": "https://github.com/@alexvyber/genstuff",
@@ -17,7 +17,7 @@
     "build": "shx rm -rf dist && tsc -b",
     "lint": "biome lint --write .",
     "format": "biome format --write .",
-    "prepack": "oclif manifest && oclif readme",
+    "prepack_DONT": "oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "posttest": "pnpm run lint",

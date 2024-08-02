@@ -12,7 +12,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "genstuff": "./bin/run.js"
+    "genstuff": "./bin/run.js",
+    "gen": "./bin/run.js"
   },
   "files": ["/bin", "/dist", "/oclif.manifest.json"],
   "scripts": {

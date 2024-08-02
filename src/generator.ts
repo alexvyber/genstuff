@@ -2,7 +2,7 @@ import { Command, type Interfaces } from "@oclif/core"
 import chalk from "chalk"
 import { existsSync } from "node:fs"
 import { renderFile } from "ejs"
-import { join, relative, resolve } from "node:path"
+import { relative, resolve } from "node:path"
 import { outputFile } from "fs-extra"
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T["args"]>

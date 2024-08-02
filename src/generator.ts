@@ -2,7 +2,7 @@ import { Command, type Interfaces } from "@oclif/core"
 import chalk from "chalk"
 import { existsSync } from "node:fs"
 import { renderFile } from "ejs"
-import { join, relative } from "node:path"
+import { join, relative, resolve } from "node:path"
 import { outputFile } from "fs-extra"
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T["args"]>
@@ -143,7 +143,7 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
 
     // @ts-expect-error because we trust that child classes will set this - also, it's okay if they don't
     this.flaggablePrompts = this.ctor.flaggablePrompts ?? {}
-    this.templatesDir = join(import.meta.dirname, "./templates")
+    this.templatesDir = resolve(import.meta.dirname, "../templates")
   }
 
   public async template(source: string, destination: string, data?: Record<string, unknown>): Promise<void> {

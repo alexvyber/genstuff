@@ -1,0 +1,7 @@
+import { FastifyPluginAsync } from "fastify"
+
+const <%- camelName %>: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  fastify.get("/<%- kebabName %>", async (request, reply) => ({ success: true }))
+}
+
+export default <%- camelName %>

@@ -1,25 +1,27 @@
 import { Args, Flags } from "@oclif/core"
 import { GeneratorCommand } from "../../generator.js"
+import { kebabCase } from "change-case"
+import { join } from "node:path"
+import { camelCase } from "change-case/keys"
 
 export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> {
   static override args = {
-    file: Args.string({ description: "file to read" }),
+    name: Args.string({ description: "route name", required: true }),
   }
-
-  static override description = "describe the command here"
-
-  static override examples = ["<%= config.bin %> <%= command.id %>"]
 
   static override flags = {
-    force: Flags.boolean({ char: "f" }),
-    name: Flags.string({ char: "n", description: "name to print" }),
+    path: Flags.string({ default: "", charAliases: ["p"] }),
   }
 
-  public async run(): Promise<void> {
-    const { args, flags } = await this.parse(FastifyRoute)
+  static override description = "Generate fastify route"
 
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
-    }
+  static override examples = ["<%= config.bin %> <%= command.id %>"]
+  async run(): Promise<void> {
+    const indexPath = join(process.cwd(), kebabCase(this.flags.path), `${kebabCase(this.args.name)}.tsx`)
+
+    await this.template(join(this.templatesDir, "fastify", "route.ts.ejs"), indexPath, {
+      camelName: camelCase(this.args.name),
+      kebabName: kebabCase(this.args.name),
+    })
   }
 }

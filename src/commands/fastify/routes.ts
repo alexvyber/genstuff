@@ -68,7 +68,7 @@ export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> 
 }
 
 const regMethod = (route: string, method: string) =>
-  tag`fastify.${method}("${route}", {}, async (request, reply) => { reply.send({ ok: true })})`
+  tag`fastify.${method}("${route}", {}, async (request, reply) => { reply.send({ route: "${route}" })})`
 
 const regPlugin = (name: string, content: string[]) =>
   tag`import { FastifyPluginAsync } from "fastify";

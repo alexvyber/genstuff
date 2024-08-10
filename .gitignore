@@ -3,7 +3,7 @@
 **/.DS_Store
 /.idea
 /dist
-# /tmp
+/tmp
 /node_modules
 oclif.manifest.json
 

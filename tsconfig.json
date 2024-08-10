@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "declaration": true,
+    // "lib":[""],
     "module": "NodeNext",
     "outDir": "dist",
     "rootDir": "src",
@@ -9,6 +10,7 @@
     "moduleResolution": "NodeNext"
   },
   "include": ["./src/**/*"],
+  "exclude": ["tmp"],
   "ts-node": {
     "esm": true
   }

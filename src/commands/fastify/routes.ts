@@ -1,11 +1,13 @@
-import { Args } from "@oclif/core"
 import { GeneratorCommand } from "../../generator.js"
-import { kebabCase, camelCase } from "change-case"
 import { join } from "node:path"
 
-import routes from "../../routes.js"
-import { writeFile } from "node:fs/promises"
-import { existsSync, mkdirSync } from "node:fs"
+// TODO: resolve this
+// TMP: works just fine at time of writing
+// @ts-ignore
+import routes from "../../../tmp/fastify/routes.js"
+import { camelCase } from "change-case"
+import { existsSync } from "node:fs"
+import { mkdir, writeFile } from "node:fs/promises"
 
 export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> {
   static override description = "Generate fastify route"
@@ -15,33 +17,44 @@ export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> 
   async run(): Promise<void> {
     const router = new Map<string, Set<string>>()
 
-    for (const { method, path } of routes) {
-      let [take] = path.split(":")
-      if (!take.endsWith("/")) take = `${take}/`
-
-      console.log({ method, take })
-
-      if (!router.has(take)) {
-        router.set(take, new Set())
+    for (const { method, path: path_ } of routes) {
+      const path = path_.endsWith("/") ? path_ : `${path_}/`
+      if (!router.has(path)) {
+        router.set(path, new Set())
       }
-
-      router.get(take)?.add(method)
+      // @ts-expect-error: broken ts
+      router.get(path).add(method)
     }
 
-    for (const [route, methods] of router.entries()) {
-      let content: string[] = []
-      const dirPath = join(process.cwd(), route)
-      const indexPath = join(dirPath, "index.ts")
+    const filesContent = new Map<string, { pluginName: string; content: string[]; indexPath: string }>()
 
-      for (const method of methods.values()) {
-        if (!existsSync(dirPath)) {
-          mkdirSync(dirPath, { recursive: true })
-        }
-        content.push( regMethod(route, method))
+    for (const [route, methods] of router.entries()) {
+      const dirpath = join(process.cwd(), route.split(":")[0])
+
+      const config: { pluginName: string; content: string[]; indexPath: string } = {
+        content: [],
+        pluginName: camelCase(route.split(":")[0].split("/").filter(Boolean).join(" ")),
+        indexPath: join(dirpath, "index.ts"),
       }
 
+      for (const method of methods.values()) {
+        config.content.push(regMethod(route, method))
+      }
+
+      if (filesContent.has(dirpath)) {
+        // @ts-expect-error: broken ts
+        filesContent.get(dirpath).content.push(...config.content)
+      } else {
+        filesContent.set(dirpath, config)
+      }
+    }
+
+    for (const [dirpath, { indexPath, content, pluginName }] of filesContent.entries()) {
       try {
-        await writeFile(indexPath, regPlugin(camelCase(route.split("/").filter(Boolean).join(" ")), content))
+        if (!existsSync(dirpath)) {
+          await mkdir(dirpath, { recursive: true })
+        }
+        await writeFile(indexPath, regPlugin(pluginName, content))
       } catch (error) {
         console.error(error)
       }
@@ -50,23 +63,19 @@ export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> 
 }
 
 const regMethod = (route: string, method: string) =>
-  registerMethod`fastify.${method}("${route}", {}, async (request, reply) => { reply.send({ ok: true })})`
-
-function registerMethod(strings: TemplateStringsArray, ...expressions: [method: string, name: string]) {
-  let str = ""
-  for (let i = 0; i < strings.length; i++) {
-    str += strings[i] + expressions[i]
-  }
-  return str
-}
+  tag`fastify.${method}("${route}", {}, async (request, reply) => { reply.send({ ok: true })})`
 
 const regPlugin = (name: string, content: string[]) =>
-  registerPlugin`import { FastifyPluginAsync } from "fastify"; const ${name} => { ${content.join(";")} }; export default ${name};`
+  tag`import { FastifyPluginAsync } from "fastify";
 
-function registerPlugin(strings: TemplateStringsArray, ...expressions: string[]) {
+const ${name}: FastifyPluginAsync = async (fastify, opts): Promise<void> => { ${content.join(";\n\n")} }; 
+
+export default ${name};`
+
+function tag(strings: TemplateStringsArray, ...expressions: string[]) {
   let str = ""
   for (let i = 0; i < strings.length; i++) {
-    str += strings[i] + expressions[i]
+    str += strings[i] + (expressions[i] ?? "")
   }
   return str
 }

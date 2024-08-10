@@ -17,7 +17,13 @@ export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> 
 
   static override examples = ["<%= config.bin %> <%= command.id %>"]
   async run(): Promise<void> {
-    const indexPath = join(process.cwd(), kebabCase(this.flags.path), `${kebabCase(this.args.name)}.tsx`)
+    let indexPath: string
+
+    if (this.flags.path) {
+      indexPath = join(process.cwd(), kebabCase(this.flags.path), "index.ts")
+    } else {
+      indexPath = join(process.cwd(), `${kebabCase(this.args.name)}.ts`)
+    }
 
     await this.template(join(this.templatesDir, "fastify", "route.ts.ejs"), indexPath, {
       camelName: camelCase(this.args.name),

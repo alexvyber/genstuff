@@ -1,7 +1,11 @@
 import { FastifyPluginAsync } from "fastify"
 
 const <%- camelName %>: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get("/<%- kebabName %>", async (request, reply) => ({ success: true }))
+  fastify.get("/<%- kebabName %>", {}, async (request, reply) => { reply.send({ ok: true })})
+  fastify.get("/<%- kebabName %>/:id", {}, async (request, reply) => { reply.send({ ok: true })})
+  fastify.post("/<%- kebabName %>", {}, async (request, reply) => { reply.send({ ok: true })})
+  fastify.patch("/<%- kebabName %>/:id", {}, async (request, reply) => { reply.send({ ok: true })})
+  fastify.delete("/<%- kebabName %>/:id", {}, async (request, reply) => { reply.send({ ok: true })})
 }
 
 export default <%- camelName %>

@@ -8,11 +8,16 @@ import routes from "../../../tmp/fastify/routes.js"
 import { camelCase } from "change-case"
 import { existsSync } from "node:fs"
 import { mkdir, writeFile } from "node:fs/promises"
+import { Flags } from "@oclif/core"
 
 export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> {
   static override description = "Generate fastify route"
 
   static override examples = ["<%= config.bin %> <%= command.id %>"]
+
+  static override flags = {
+    path: Flags.string({ char: "p", default: undefined }),
+  }
 
   async run(): Promise<void> {
     const router = new Map<string, Set<string>>()
@@ -29,7 +34,7 @@ export default class FastifyRoute extends GeneratorCommand<typeof FastifyRoute> 
     const filesContent = new Map<string, { pluginName: string; content: string[]; indexPath: string }>()
 
     for (const [route, methods] of router.entries()) {
-      const dirpath = join(process.cwd(), route.split(":")[0])
+      const dirpath = join(process.cwd(), this.flags.path ?? "", route.split(":")[0])
 
       const config: { pluginName: string; content: string[]; indexPath: string } = {
         content: [],

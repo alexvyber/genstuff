@@ -1,7 +1,8 @@
 import { Args, Flags } from "@oclif/core"
 import { GeneratorCommand } from "../../generator.js"
-import { kebabCase } from "change-case"
 import { join } from "node:path"
+import { kebabCase } from "change-case"
+import { parseProps, parseVariants } from "../../utils/react-comp.js"
 
 export default class ReactComponent extends GeneratorCommand<typeof ReactComponent> {
   static override args = {
@@ -19,7 +20,7 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
     dir: Flags.directory({ char: "d", exists: true }),
     path: Flags.string({ default: undefined }),
     force: Flags.boolean({ char: "f", default: false }),
-    cvax: Flags.boolean({ default: false }),
+    variants: Flags.string({ char: "v", default: undefined }),
     declared: Flags.option({ options: ["fn", "class", "arrow"] as const })({ default: "fn", multiple: false }),
     export: Flags.option({ options: ["props", "default"] as const })({ default: [], multiple: true }),
   }
@@ -33,8 +34,8 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
    *    - class adds className - TODO: deside wheter use or not
    * 2. stories
    *    - if stories flag is provided, then craete stories file
-   * 3. cvax
-   *    - if cvax flag is provided, then all use cvax specific props
+   * 3. variants
+   *    - if variants flag is provided, then all use variants specific props
    *    - or use separate file for variants declaration
    * 4. tests
    *    - if test flag is provided, then generate tests
@@ -42,28 +43,34 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
    */
 
   async run(): Promise<void> {
-    const indexPath = join(process.cwd(), kebabCase(this.args.name), "index.tsx")
-
-    await this.template(join(this.templatesDir, "react", `component-${this.flags.declared}.tsx.ejs`), indexPath, {
+    const parsedVariants = parseVariants(this.flags.variants)
+    const store = {
       name: this.args.name,
-    })
+      parsedProps: parseProps(
+        [...(parsedVariants.length > 0 ? ["className?:string"] : []), this.flags.variants, this.flags.props].join(";")
+      ),
+      parsedVariants,
+    }
+
+    {
+      const templatePath = join(this.templatesDir, "react", `component-${this.flags.declared}.tsx.ts`)
+      const indexPath = join(process.cwd(), kebabCase(store.name), `${kebabCase(store.name)}.tsx`)
+
+      await this.writeTemplate(templatePath, indexPath, store)
+    }
 
     if (this.flags.story) {
-      const storyPath = join(process.cwd(), kebabCase(this.args.name), `${kebabCase(this.args.name)}.stories.tsx`)
+      const templatePath = join(this.templatesDir, "react", "stories.tsx.ts")
+      const storyPath = join(process.cwd(), kebabCase(store.name), `${kebabCase(store.name)}.stories.tsx`)
 
-      await this.template(join(this.templatesDir, "react", "storybook.tsx.ejs"), storyPath, { name: this.args.name })
+      await this.writeTemplate(templatePath, storyPath, store)
     }
 
-    if (this.flags.test) {
-      const testPath = join(process.cwd(), kebabCase(this.args.name), `${kebabCase(this.args.name)}.test.tsx`)
+    if (this.flags.variants) {
+      const templatePath = join(this.templatesDir, "react", "variants.tsx.ts")
+      const variantsPath = join(process.cwd(), kebabCase(store.name), `${kebabCase(store.name)}.variants.ts`)
 
-      await this.template(join(this.templatesDir, "react", "vitest.tsx.ejs"), testPath, { name: this.args.name })
-    }
-
-    if (this.flags.cvax) {
-      const cvaxPath = join(process.cwd(), kebabCase(this.args.name), `${kebabCase(this.args.name)}.variants.ts`)
-
-      await this.template(join(this.templatesDir, "react", "cvax.tsx.ejs"), cvaxPath, { name: this.args.name })
+      await this.writeTemplate(templatePath, variantsPath, store)
     }
   }
 }

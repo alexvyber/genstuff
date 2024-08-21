@@ -143,7 +143,7 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
 
     // @ts-expect-error because we trust that child classes will set this - also, it's okay if they don't
     this.flaggablePrompts = this.ctor.flaggablePrompts ?? {}
-    this.templatesDir = resolve(import.meta.dirname, "../templates")
+    this.templatesDir = resolve(import.meta.dirname, "./templates")
   }
 
   public async template(source: string, destination: string, data?: Record<string, unknown>): Promise<void> {
@@ -155,6 +155,34 @@ export abstract class GeneratorCommand<T extends typeof Command> extends Command
         return resolve(str)
       })
     )
+
+    if (!rendered) {
+      return
+    }
+
+    const relativePath = relative(process.cwd(), destination)
+
+    if (!existsSync(destination)) {
+      this.log(`${chalk.yellow("Creating")} ${relativePath}`)
+      return outputFile(destination, rendered)
+    }
+
+    const confirmation =
+      this.flags.force ?? (await (await import("@inquirer/confirm")).default({ message: `Overwrite ${relativePath}?` }))
+
+    if (!confirmation) {
+      this.log(`${chalk.yellow("Skipping")} ${relativePath}`)
+      return
+    }
+
+    this.log(`${chalk.yellow("Overwriting")} ${relativePath}`)
+    await outputFile(destination, rendered)
+  }
+
+  public async writeTemplate(source: string, destination: string, data?: Record<string, unknown>): Promise<void> {
+    const module = await import(source)
+
+    const rendered = module.template(data)
 
     if (!rendered) {
       return

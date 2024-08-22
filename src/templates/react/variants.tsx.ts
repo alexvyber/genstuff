@@ -8,9 +8,9 @@ export function template({ name, parsedVariants }: TemplateConfig) {
 
 ${renderVariants(parsedVariants, name)}
 
-type ${name}Props = VariantProps<typeof ${uncapitalize(name)}Variants>
-
-export { ${uncapitalize(name)}Variants }
+type ${name}VariantProps = VariantProps<typeof ${uncapitalize(name)}Variants>;
+export type { ${name}VariantProps };
+export { ${uncapitalize(name)}Variants };
 
 `
 }

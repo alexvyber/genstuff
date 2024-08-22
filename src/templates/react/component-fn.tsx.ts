@@ -8,9 +8,9 @@ export function template({ name, parsedProps, parsedVariants }: TemplateConfig) 
   const hasClassName = parsedProps.some((v) => v.name === "className")
   const hasVariants = parsedVariants.length > 0
   return `import React from "react"
-  ${hasVariants ? `import { ${uncapitalize(name)}Variants } from "./${kebabCase(name)}.variants.ts"` : ""}
+  ${hasVariants ? `import { ${uncapitalize(name)}Variants, type  ${name}VariantProps  } from "./${kebabCase(name)}.variants"` : ""}
 
-type Props = { ${rednerTypes(parsedProps)} };
+type Props = ${hasVariants ? `${name}VariantProps` : ""} & { ${rednerTypes(parsedProps.filter(p => !parsedVariants.some(v => v.name ===p.name)))} };
 
 function ${name} ( ${renderProps([...parsedProps])} ) {
     return <div 

@@ -53,21 +53,21 @@ export default class ReactComponent extends GeneratorCommand<typeof ReactCompone
     }
 
     {
-      const templatePath = join(this.templatesDir, "react", `component-${this.flags.declared}.tsx.ts`)
+      const templatePath = join(this.templatesDir, "react", `component-${this.flags.declared}.tsx.js`)
       const indexPath = join(process.cwd(), kebabCase(store.name), `${kebabCase(store.name)}.tsx`)
 
       await this.writeTemplate(templatePath, indexPath, store)
     }
 
     if (this.flags.story) {
-      const templatePath = join(this.templatesDir, "react", "stories.tsx.ts")
+      const templatePath = join(this.templatesDir, "react", "stories.tsx.js")
       const storyPath = join(process.cwd(), kebabCase(store.name), `${kebabCase(store.name)}.stories.tsx`)
 
       await this.writeTemplate(templatePath, storyPath, store)
     }
 
     if (this.flags.variants) {
-      const templatePath = join(this.templatesDir, "react", "variants.tsx.ts")
+      const templatePath = join(this.templatesDir, "react", "variants.tsx.js")
       const variantsPath = join(process.cwd(), kebabCase(store.name), `${kebabCase(store.name)}.variants.ts`)
 
       await this.writeTemplate(templatePath, variantsPath, store)

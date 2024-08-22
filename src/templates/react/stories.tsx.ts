@@ -37,7 +37,7 @@ ${variant.variants.reduce((acc, cur, _, arr) => {
   return `
 import React from 'react';
 import type { StoryDefault, Story } from "@ladle/react";
-import { ${name}, ${name}Props } from "./${kebabCase(name)}.tsx"
+import { ${name}, ${name}Props } from "./${kebabCase(name)}"
 
 export default {
     title: "${name}",

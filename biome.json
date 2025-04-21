@@ -10,7 +10,7 @@
     "ignore": [
       "src/payload-generated-schema.ts",
       "src/payload-types.ts",
-      "src/app/(payload)/manager/importMap.js",
+      "src/app/(payload)/manager/importMap",
       "package.json",
       "node_modules",
       ".next"
@@ -32,6 +32,11 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+
+      "style": {
+        "noVar": "off"
+      },
+
       "correctness": {
         "noUnusedImports": "error"
       }

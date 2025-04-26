@@ -138,11 +138,8 @@ async function doTheGenstuff({
   }
 }
 
-async function init(params?: {
-
-}): Promise<Genstuff> {
+async function init(params?: {}): Promise<Genstuff> {
   return new Genstuff()
-
 }
 
 export { run }

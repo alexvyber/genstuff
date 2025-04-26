@@ -7,7 +7,6 @@ import {
   constantCase,
   kebabCase,
   pascalCase,
-  
 } from "change-case"
 import { titleCase } from "title-case"
 import type { HelperFn } from "./genstuff"

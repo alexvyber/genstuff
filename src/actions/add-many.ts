@@ -1,11 +1,11 @@
 import path from "node:path"
 import fs from "node:fs"
 import { globbySync } from "globby"
-import { isValidAction } from "../../lib/is-valid-action"
-import { normalizePath } from "../../lib/action-utils"
-import { createFile } from "../../lib/craete-file"
-import type { Genstuff } from "../genstuff"
-import type { TODO_RenameOptions } from "../../types/types"
+import { isValidAction } from "../lib/is-valid-action"
+import { normalizePath } from "../lib/action-utils"
+import { createFile } from "../lib/craete-file"
+import type { Genstuff } from "../core/genstuff"
+import type { TODO_RenameOptions } from "../types/types"
 
 var defaultConfig = {
   verbose: true,

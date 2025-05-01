@@ -3,12 +3,12 @@ import {
   getRenderedTemplatePath,
   makeDestinationPath,
   getRelativeToBasePath,
-} from "../../lib/action-utils"
+} from "../lib/action-utils"
 
-import { isValidAction } from "../../lib/is-valid-action"
-import { fileExists } from "../../lib/fs-promise-proxy"
+import { isValidAction } from "../lib/is-valid-action"
+import { fileExists } from "../lib/fs-promise-proxy"
 import { readFile, writeFile } from "node:fs/promises"
-import { throwStringifiedError } from "../utils"
+import { throwStringifiedError } from "../core/utils"
 
 async function append({ data, config, genstuff }: TODO_RenameOptions) {
   var interfaceTestResult = isValidAction(config)

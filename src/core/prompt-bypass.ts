@@ -216,7 +216,12 @@ export async function promptBypass({
   var promptsAfterBypass = [
     // first prompt will copy the bypass answer data so it's available
     // for prompts and actions to use
-    { when: (data) => (Object.assign(data, answers), false) },
+    {
+      when: (data) => {
+        Object.assign(data, answers)
+        return false
+      },
+    },
     // inlcude any prompts that were NOT bypassed
     ...prompts.filter((p) => !bypassedPrompts.includes(p)),
   ]

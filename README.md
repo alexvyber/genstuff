@@ -1,15 +1,11 @@
-# genstuff
+actions as separate thing
+    users can write custom actions as much as they want
 
-To install dependencies:
+tool specific helpers
 
-```bash
-bun install
-```
+tool specific actions
 
-To run:
+tool specific templates
 
-```bash
-bun run index.ts
-```
+config based generation
 
-This project was created using `bun init` in bun v1.2.9. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

@@ -3,8 +3,8 @@ import type { Context, GeneratorType } from "../types/types"
 import { promptBypass } from "./prompt-bypass"
 import { invariant, toMerged } from "es-toolkit"
 import type { Genstuff } from "./genstuff"
-import { actions } from "./actions"
-import type { CustomActionFunction } from "../types/action.types"
+import { actions } from "../actions"
+import type { ActionFunction } from "../types/action.types"
 import type { Hooks } from "../lib/hooks"
 
 // triggers inquirer with the correct prompts for this generator
@@ -148,7 +148,7 @@ async function runGeneratorActions(params: RunGeneratorActionsParams) {
 // }
 
 type ExecuteActionParams = {
-  action: CustomActionFunction
+  action: ActionFunction
   config: any
   gen: Genstuff
   answers: Answers

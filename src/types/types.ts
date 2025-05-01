@@ -1,10 +1,8 @@
 import type inquirer from "inquirer"
 import type { Answers } from "inquirer"
 import type { Genstuff } from "../core/genstuff"
-import type { ActionType, ActionConfig, CustomActionFunction, Action } from "./action.types"
+import type { ActionType, ActionConfig, ActionFunction, Action } from "./action.types"
 import type { Prompts } from "./prompt.types"
-
-type Inquirer = typeof inquirer
 
 // export interface IncludeDefinitionConfig {
 //   generators?: boolean
@@ -103,12 +101,13 @@ export type Context = { readonly [key: string]: any }
 
 export type GeneratorType<A extends Record<string, any> = any> = {
   name: string
-  prompts: Prompts[]
+  // prompts: Prompts[]
   description?: string
-  parse?: (answers: Record<string, string>) => A
-  actions: (args: { answers: A; gen: Genstuff; ctx?: Context }) =>
-    | Promise<Action<A>[]>
-    | Action<A>[]
+  // parse?: (answers: Record<string, string>) => A
+  actions: (args: {
+    //  answers: A;
+    gen: Genstuff
+  }) => Promise<Action[]> | Action[]
 }
 
 export type Config = {
@@ -119,11 +118,8 @@ export type Config = {
 // export var getPrompt: GetPrompt = (config) => {
 //   return { name: config.name, type: "asdf" }
 // }
-
 // type SomeArgs = { genstuff: any; context: any }
-
 // type GetAction = <R>(config: any) => Action
-
 // export type GenAnswers = Record<string, any>
 
 export type TODO_RenameOptions = {

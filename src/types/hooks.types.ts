@@ -1,5 +1,3 @@
-import type { Ora } from "ora"
-
 export interface GenstuffActionHooksFailures {
   type: TODOTypeName
   path: string

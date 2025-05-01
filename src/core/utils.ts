@@ -12,13 +12,11 @@ function defineConfig(config: Config | ((genstuff: Genstuff) => Config)): Config
   return config
 }
 
-function defineGenerator<A extends Record<string, any>>(
-  generator: GeneratorType<A>,
-): GeneratorType<A> {
+function generator<A extends Record<string, any>>(generator: GeneratorType<A>): GeneratorType<A> {
   return generator
 }
 
-function buildAction(action: ActionType): ActionType {
+function action(action: ActionType): ActionType {
   return action
 }
 
@@ -30,4 +28,4 @@ function throwStringifiedError(err: Error | string) {
   throw err.message || JSON.stringify(err)
 }
 
-export { defineConfig, buildAction, throwStringifiedError, defineGenerator }
+export { defineConfig, action, throwStringifiedError, generator }

@@ -11,7 +11,6 @@ function loadConfig(env: {
   config?: string | undefined
 }) {
   var finalpath = env.config ? path.resolve(env.cwd, env.config) : findConfig(env.cwd)
-  console.log("🚀 ~ finalpath:", finalpath)
 
   if (!finalpath) {
     throw new Error("No config file found")

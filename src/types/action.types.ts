@@ -1,23 +1,8 @@
-import type { Context } from "./types"
 import type { Genstuff } from "../core/genstuff"
 
-export type ActionType =
-  // | string
-  // | AddActionConfig
-  // | AddManyActionConfig
-  // | ModifyActionConfig
-  // | AppendActionConfig
-
-  ActionConfig | CustomActionFunction
-
-//   type	String		the type of action (add, modify, addMany, etc)
-// force	Boolean	false	performs the action forcefully (means different things depending on the action)
-// data	Object / Function	{}	specifies data that should be mixed with user prompt answers when running this action
-// abortOnFail	Boolean	true	if this action fails for any reason abort all future actions
-// skip	Function		an optional function that specifies if the action should run
+export type ActionType = ActionFunction
 
 export interface ActionConfig {
-  type: string
   name?: string
   force?: boolean
   context?: object
@@ -71,29 +56,26 @@ type ActionReturnType =
   | undefined
   | string
 
-export type CustomActionFunction<Answers extends Record<string, any> = Record<string, any>> =
-  (args: {
-    answers: Answers
-    config: CustomActionConfig<string>
-    gen: Genstuff
-  }) => Promise<ActionReturnType> | ActionReturnType
+export type ActionFunction = (args: {
+  gen: Genstuff
+}) => Promise<void> | void
 
 export interface CustomActionConfig<TypeString extends string> extends Omit<ActionConfig, "type"> {
-  type: TypeString extends "addMany" | "modify" | "append" ? never : TypeString
+  type: TypeString extends "addMany" | "modify" | "append" | "config" | "add" ? never : TypeString
   [key: string]: any
 }
-
-export type Template =
-  | { template?: never; templateFile: string }
-  | { template: string; templateFile?: never }
 
 export type TransformFn<T> = (args: { template: string; data: any; config: T }) =>
   | string
   | Promise<string>
 
-export type Action<A extends Record<string, any> = any> =
-  | string
-  | { type: "config"; config: string; abortOnFail?: boolean; force?: boolean; path?: string }
-  // | { type: "add"; path: string; templateFile: string; abortOnFail?: boolean; force?: boolean }
-  // | ((args: SomeArgs) => Action | void)
-  | CustomActionFunction<A>
+export type Action = ActionFunction
+
+export type DefineActionFunciton<Conifg extends object> = (
+  config: Conifg & ActionConfig,
+) => ActionFunction
+
+export type Template = { template: string; file?: never } | { template?: never; file: string }
+export type Templates =
+  | { templates: string[]; files?: never }
+  | { templates?: never; files: string[] }

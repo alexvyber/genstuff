@@ -6,15 +6,12 @@ import handlebars from "handlebars"
 import { helpers } from "./default-helpers"
 
 type SetterScope = "generator" | "helper" | "partial" | "action"
-// | "message"
-// | "defaultInclude"
-// | "destinationBasePath"
-// | "configFile"
 
 type SetOptions = { override?: boolean }
 type Name = { name: string }
 
 export type HelperFn = (str: string) => string
+
 type Mapping = {
   generator: GeneratorType
   helper: Name & { target: HelperFn }
@@ -63,12 +60,17 @@ export class Genstuff {
 
   context = {
     get: () => readonly(this.#context),
+
     set: (name: string, value: any) => {
+      const item = get(this.#context, name)
+
+      if (item) {
+        throw new Error(`Value for ${name} is already set in the context`)
+      }
+
       set(this.#context, name, value)
     },
   }
-
-  getContext() {}
 
   getWelcomeMessage() {
     return this.welcomeMessage
@@ -140,7 +142,7 @@ export class Genstuff {
   }
 
   setContextValue(name: string, value: any) {
-    Object.assign(this.#context, { [name]: value })
+    set(this.#context, name, value)
     return this
   }
 
@@ -173,3 +175,5 @@ export class Genstuff {
     return this
   }
 }
+
+const some = new Genstuff()

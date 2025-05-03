@@ -1,14 +1,15 @@
-import type { DefineActionFunciton, Template } from "../types/action.types"
+import type { DefineActionFunciton, Template, Templates } from "../types/action.types"
 
-type WriteActionConfig = {
-  path: string
-  skipIfExists?: boolean
-} & Template
+type WriteActionConfig =
+  | (Template & { path: string })
+  | (Template & { config: string })
+  | (Templates & { destination: string; path: string })
+  | (Templates & { destination: string; config: string })
 
-const wirte: DefineActionFunciton<WriteActionConfig> = (config) => {
+const write: DefineActionFunciton<WriteActionConfig> = (config) => {
   return (args) => {
     args
   }
 }
 
-export { wirte }
+export { write }

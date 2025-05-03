@@ -1,7 +1,5 @@
-import type { ActionFunction } from "../types/action.types"
-import { config } from "./from-config"
+import { write } from "./write"
 
 export var actions = {
-  // add, addMany, modify, append ,
-  config,
-} satisfies Record<string, ActionFunction>
+  write,
+}

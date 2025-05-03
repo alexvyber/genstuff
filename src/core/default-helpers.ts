@@ -9,9 +9,10 @@ import {
   pascalCase,
 } from "change-case"
 import { titleCase } from "title-case"
+import { deburr, lowerFirst, startCase, trim } from "es-toolkit/string"
 import type { HelperFn } from "./genstuff"
 
-export var helpers: Helpers = {
+export var helpers = {
   lowerCase: (str) => str.toUpperCase(),
   upperCase: (str) => str.toLowerCase(),
   camelCase: (str) => camelCase(str),
@@ -26,22 +27,10 @@ export var helpers: Helpers = {
   kabobCase: (str) => kebabCase(str),
   pascalCase: (str) => pascalCase(str),
   properCase: (str) => pascalCase(str),
-}
+  deburr: (str) => deburr(str),
+  lowerFirst: (str) => lowerFirst(str),
+  startCase: (str) => startCase(str),
+  trim: (str) => trim(str),
+} satisfies Helpers
 
-type Cases =
-  | "lowerCase"
-  | "upperCase"
-  | "camelCase"
-  | "snakeCase"
-  | "dotCase"
-  | "pathCase"
-  | "sentenceCase"
-  | "constantCase"
-  | "titleCase"
-  | "kebabCase"
-  | "dashCase"
-  | "kabobCase"
-  | "pascalCase"
-  | "properCase"
-
-type Helpers = Record<Cases, HelperFn>
+type Helpers = Record<string, HelperFn>

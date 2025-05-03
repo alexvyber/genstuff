@@ -1,7 +1,7 @@
 import { get, set } from "es-toolkit/compat"
 import { readonly } from "../lib/readonly-proxy"
-import type { Context, GeneratorType } from "../types/types"
-import type { ActionType } from "../types/action.types"
+import type { GeneratorType } from "../types/types"
+import type { ActionFunction } from "../types/action.types"
 import handlebars from "handlebars"
 import { helpers } from "./default-helpers"
 
@@ -16,14 +16,14 @@ type Mapping = {
   generator: GeneratorType
   helper: Name & { target: HelperFn }
   partial: Name & { target: string }
-  action: Name & { target: ActionType }
+  action: Name & { target: ActionFunction }
 }
 
 type MappingLol = {
   generator: GeneratorType
   helper: HelperFn
   partial: string
-  action: ActionType
+  action: ActionFunction
 }
 
 type GetSetterType<Key extends SetterScope> = MappingLol[Key]
@@ -33,12 +33,6 @@ type Setter<T extends SetterScope> = { target: GetSetterType<T>; name: string }
 type GetReturnType<T extends SetterScope> = MappingLol[T]
 
 export class Genstuff {
-  #context: Record<string, any>
-
-  constructor(ctx: Context = {}) {
-    this.#context = ctx
-  }
-
   #generators: Record<string, any> = {}
   #partials: Record<string, string> = {}
   #helpers: Record<string, any> = helpers
@@ -58,19 +52,24 @@ export class Genstuff {
 
   welcomeMessage = "Genstuff welcome message"
 
-  context = {
-    get: () => readonly(this.#context),
-
-    set: (name: string, value: any) => {
-      const item = get(this.#context, name)
-
-      if (item) {
-        throw new Error(`Value for ${name} is already set in the context`)
-      }
-
-      set(this.#context, name, value)
-    },
-  }
+  // #context: Record<string, any>
+  // constructor(ctx: Context = {}) {
+  //   this.#context = ctx
+  // }
+  // context = {
+  //   get: () => readonly(this.#context),
+  //   set: (name: string, value: any) => {
+  //     const item = get(this.#context, name)
+  //     if (item) {
+  //       throw new Error(`Value for ${name} is already set in the context`)
+  //     }
+  //     set(this.#context, name, value)
+  //   },
+  // }
+  // setContextValue(name: string, value: any) {
+  //   set(this.#context, name, value)
+  //   return this
+  // }
 
   getWelcomeMessage() {
     return this.welcomeMessage
@@ -129,7 +128,7 @@ export class Genstuff {
     return this.set("generator", { target: generator, name }, options)
   }
 
-  setAction(name: string, action: ActionType, options?: SetOptions) {
+  setAction(name: string, action: ActionFunction, options?: SetOptions) {
     return this.set("action", { target: action, name }, options)
   }
 
@@ -139,11 +138,6 @@ export class Genstuff {
 
   setHelper(name: string, helper: HelperFn, options?: SetOptions) {
     return this.set("helper", { target: helper, name }, options)
-  }
-
-  setContextValue(name: string, value: any) {
-    set(this.#context, name, value)
-    return this
   }
 
   renderString(params: { template: string; data: Record<string, any> }): string {

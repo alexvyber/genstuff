@@ -1,5 +1,5 @@
 import type { Config, GeneratorType } from "../types/types"
-import type { ActionType } from "../types/action.types"
+import type { ActionFunction } from "../types/action.types"
 import { Genstuff } from "./genstuff"
 
 function defineConfig(config: Config | ((genstuff: Genstuff) => Config)): Config {
@@ -16,7 +16,7 @@ function generator<A extends Record<string, any>>(generator: GeneratorType<A>): 
   return generator
 }
 
-function action(action: ActionType): ActionType {
+function action(action: ActionFunction): ActionFunction {
   return action
 }
 

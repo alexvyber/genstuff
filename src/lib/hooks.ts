@@ -1,19 +1,10 @@
-import ora, { type Ora } from "ora"
-import minimist from "minimist"
-import chalk from "chalk"
-
-import { Genstuff } from "../core/genstuff"
+import { type Ora } from "ora"
 import type {
   GenstuffActionHooks,
   GenstuffActionHooksChanges,
   GenstuffActionHooksFailures,
 } from "../types/hooks.types"
-import type { Context, GeneratorType } from "../types/types"
-import { runGeneratorActions, runGeneratorPrompts } from "../core/runner"
-import { getErrorMessage } from "./get-error-message"
-import { readonly } from "./readonly-proxy"
-import { handleBasicArgFlags } from "./handle-arg-flags"
-import { chooseOptionFromList, typeMap } from "./console-out"
+import { typeMap } from "./console-out"
 
 class Hooks implements GenstuffActionHooks {
   constructor(private spinner?: Ora) {}

@@ -1,9 +1,9 @@
-import type { ActionType } from "../types/action.types"
+import type { ActionFunction } from "../types/action.types"
 
 type CheckOption = { checkPath?: boolean; checkAbortOnFail?: boolean }
 
 function isValidAction(
-  action: ActionType,
+  action: ActionFunction,
   options?: CheckOption,
 ): { valid: true; reason?: undefined } | { valid: false; reason: string } {
   if (typeof action !== "object") {

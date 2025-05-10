@@ -1,7 +1,7 @@
 import { ai } from "./actions/ai"
 import { prompts, type InferPromptsOutputs } from "./actions/prompts"
 import { write } from "./actions/write"
-import { defineConfig, generator } from "./core/utils"
+import { config, generator } from "./core/utils"
 import { actions } from "./types/types"
 
 const promptsAction = prompts([{ type: "input", message: "Name?", name: "name" }])
@@ -13,17 +13,17 @@ type Propmts = InferPromptsOutputs<
 >
 
 const gen = generator({
-  name: "some",
+  name: "files",
   description: "desc",
   actions: actions<Propmts>([
     promptsAction,
 
-    write({ path: "asdf", file: "asdf" }),
+    write({ path: "asdf", file: "/some/place/on/disk/file.jpg" }),
 
     promptsAction2,
 
     ai({
-      model: "gemeni-2.5",
+      model: "o3",
       path: "asdfasdf",
       provider: "google",
       template: "asdfasdf",
@@ -76,6 +76,6 @@ const two = generator({
   ]),
 })
 
-const config = defineConfig({
+config({
   generators: [gen, two],
 })

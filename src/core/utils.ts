@@ -2,7 +2,7 @@ import type { Config, GeneratorType } from "../types/types"
 import type { ActionFunction } from "../types/action.types"
 import { Genstuff } from "./genstuff"
 
-function defineConfig(config: Config | ((genstuff: Genstuff) => Config)): Config {
+function config(config: Config | ((genstuff: Genstuff) => Config)): Config {
   var genstuff = new Genstuff()
 
   if (typeof config === "function") {
@@ -28,4 +28,4 @@ function throwStringifiedError(err: Error | string) {
   throw err.message || JSON.stringify(err)
 }
 
-export { defineConfig, action, throwStringifiedError, generator }
+export { config, action, throwStringifiedError, generator }

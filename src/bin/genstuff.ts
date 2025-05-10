@@ -13,7 +13,9 @@ import { chooseOptionFromList } from "../lib/console-out"
 import { Hooks } from "../lib/hooks"
 import { loadEnv, loadConfig, parseConfig } from "../lib/config"
 
-await run({ env: {}, _some: [], passArgsBeforeDashes: false })
+await run(
+  // { env: {}, _some: [], passArgsBeforeDashes: false }
+)
 
 async function run() {
   var args = process.argv.slice(2)
@@ -28,18 +30,12 @@ async function run() {
 
   setGenerators(gen, config.generators)
 
-  var generator = await getGenerator({
-    generatorName: "config",
-    gen,
-    bypassArray: [],
-  })
+  var generator = await getGenerator({ generatorName: "config", gen, bypassArray: [] })
 
   var bypassArray: any[] = []
   var disableSpinner = false
 
-  var rawAnswers = await runGeneratorPrompts({ generator, bypassArray })
-
-  var answers = generator?.parse ? generator.parse(rawAnswers) : rawAnswers
+  var answers = await runGeneratorPrompts({ generator, bypassArray })
 
   try {
     var spinner = ora({
@@ -49,12 +45,7 @@ async function run() {
 
     spinner.start()
 
-    var res = await runGeneratorActions({
-      answers,
-      hooks: new Hooks(spinner),
-      gen,
-      generator,
-    })
+    var res = await runGeneratorActions({ answers, hooks: new Hooks(spinner), gen, generator })
 
     spinner.stop()
 
@@ -107,6 +98,7 @@ async function getGenerator({
   }
 
   var maybeGenerator = generators.find((generator) => generator.name === generatorName)
+  
   if (maybeGenerator) {
     return maybeGenerator
   }

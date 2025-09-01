@@ -1,31 +1,15 @@
 {
-    "exclude": ["node_modules", "dist"],  // don’t compile these
   "compilerOptions": {
-    // Environment setup & latest features
-    "lib": ["ESNext"],
-    "target": "es2024",
-    "module": "ESNext",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
-
-    // Bundler mode
-    "moduleResolution": "bundler",
-    "verbatimModuleSyntax": true,
     "declaration": true,
-    "rootDir": "./src",
-    "outDir": "./dist",
-
-    // Best practices
+    "module": "Node16",
+    "outDir": "dist",
+    "rootDir": "src",
     "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "target": "es2022",
+    "moduleResolution": "node16"
   },
-  "include": ["./src"]
+  "include": ["./src/**/*"],
+  "ts-node": {
+    "esm": true
+  }
 }

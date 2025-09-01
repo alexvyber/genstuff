@@ -29,8 +29,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`gen hello PERSON`](#gen-hello-person)
-* [`gen hello world`](#gen-hello-world)
+* [`gen gen`](#gen-gen)
 * [`gen help [COMMAND]`](#gen-help-command)
 * [`gen plugins`](#gen-plugins)
 * [`gen plugins add PLUGIN`](#gen-plugins-add-plugin)
@@ -43,47 +42,22 @@ USAGE
 * [`gen plugins unlink [PLUGIN]`](#gen-plugins-unlink-plugin)
 * [`gen plugins update`](#gen-plugins-update)
 
-## `gen hello PERSON`
+## `gen gen`
 
-Say hello
-
-```
-USAGE
-  $ gen hello PERSON -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
-
-FLAGS
-  -f, --from=<value>  (required) Who is saying hello
-
-DESCRIPTION
-  Say hello
-
-EXAMPLES
-  $ gen hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
-```
-
-_See code: [src/commands/hello/index.ts](https://github.com/repos/genstuff/blob/v0.0.0/src/commands/hello/index.ts)_
-
-## `gen hello world`
-
-Say hello world
+describe the command here
 
 ```
 USAGE
-  $ gen hello world
+  $ gen gen
 
 DESCRIPTION
-  Say hello world
+  describe the command here
 
 EXAMPLES
-  $ gen hello world
-  hello world! (./src/commands/hello/world.ts)
+  $ gen gen
 ```
 
-_See code: [src/commands/hello/world.ts](https://github.com/repos/genstuff/blob/v0.0.0/src/commands/hello/world.ts)_
+_See code: [src/commands/gen.ts](https://github.com/repos/genstuff/blob/v0.0.0/src/commands/gen.ts)_
 
 ## `gen help [COMMAND]`
 

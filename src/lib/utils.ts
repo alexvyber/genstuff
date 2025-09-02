@@ -17,7 +17,6 @@ export async function run__TODO_chooseBetterName(
       prompt([
         {
           type: "select",
-
           choices: generators.map(({ name, description }) => ({
             name,
             hint: description,

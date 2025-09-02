@@ -20,7 +20,7 @@ $ npm install -g genstuff
 $ gen COMMAND
 running command...
 $ gen (--version)
-genstuff/0.0.0 darwin-arm64 node-v24.7.0
+genstuff/0.0.1-dev.0 darwin-arm64 node-v24.7.0
 $ gen --help [COMMAND]
 USAGE
   $ gen COMMAND
@@ -57,7 +57,7 @@ EXAMPLES
   $ gen gen
 ```
 
-_See code: [src/commands/gen.ts](https://github.com/repos/genstuff/blob/v0.0.0/src/commands/gen.ts)_
+_See code: [src/commands/gen.ts](https://github.com/repos/genstuff/blob/v0.0.1-dev.0/src/commands/gen.ts)_
 
 ## `gen help [COMMAND]`
 

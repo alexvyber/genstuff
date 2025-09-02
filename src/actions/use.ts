@@ -4,10 +4,10 @@ import type {
 } from "../core/runner.js"
 
 export function use(
-  callback: (params: RunGeneratorActionsParams) => RunGeneratorActionFn,
+  callback: (params: RunGeneratorActionsParams) =>  Promise<RunGeneratorActionFn> ,
 ): RunGeneratorActionFn {
-  return function runAction(params) {
-    const actionFn = callback(params)
+  return async function runAction(params) {
+    const actionFn = await callback(params)
     return actionFn(params)
   }
 }

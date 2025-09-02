@@ -79,35 +79,34 @@ export class Genstuff {
       return Object.keys(target) as any
     }
 
-    if (scope === "actions") {
-      return Object.entries(target).map(([name, action]) => ({
-        name,
-        action,
-      })) as any
-    }
+    switch (scope) {
+      case "actions":
+        return Object.entries(target).map(([name, action]) => ({
+          name,
+          action,
+        })) as any
 
-    if (scope === "helpers") {
-      return Object.entries(target).map(([name, helper]) => ({
-        name,
-        helper,
-      })) as any
-    }
+      case "helpers":
+        return Object.entries(target).map(([name, helper]) => ({
+          name,
+          helper,
+        })) as any
 
-    if (scope === "partials") {
-      return Object.entries(target).map(([name, partial]) => ({
-        name,
-        partial,
-      })) as any
-    }
+      case "partials":
+        return Object.entries(target).map(([name, partial]) => ({
+          name,
+          partial,
+        })) as any
 
-    if (scope === "generators") {
-      return Object.entries(target).map(([name, value]) => ({
-        ...((value as any).target as any),
-        name,
-      })) as any
-    }
+      case "generators":
+        return Object.entries(target).map(([name, value]) => ({
+          ...((value as any).target as any),
+          name,
+        })) as any
 
-    throw new Error("can't find the scope")
+      default:
+        throw new Error("can't find the scope")
+    }
   }
 
   getGenstuffFilePath(): string {

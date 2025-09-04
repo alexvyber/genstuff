@@ -96,30 +96,31 @@ async function runGeneratorActions(params: RunGeneratorActionsParams) {
       continue
     }
 
-    try {
-      var actionResult = await executeAction({
-        action: actionLogic,
-        config: actionConfig,
-        ctx: params.ctx,
-        genstuff: params.genstuff,
-      })
+    // try {
+    var actionResult = await executeAction({
+      action: actionLogic,
+      config: actionConfig,
+      ctx: params.ctx,
+      genstuff: params.genstuff,
+    })
 
-      params.hooks?.onSuccess?.(actionResult)
+    params.hooks?.onSuccess?.(actionResult)
 
-      changes.push(actionResult)
-    } catch (failure) {
-      if (actionConfig.abortOnFail !== false) {
-        abort = true
-      }
+    changes.push(actionResult)
+    // }
+    // catch (failure) {
+    //   if (actionConfig.abortOnFail !== false) {
+    //     abort = true
+    //   }
 
-      params.hooks?.onFailure?.(failure)
+    //   params.hooks?.onFailure?.(failure)
 
-      if (failure instanceof Error) {
-        throw failure
-      }
-      throw new Error()
-      failures.push(failure)
-    }
+    //   if (failure instanceof Error) {
+    //     throw failure
+    //   }
+    //   throw new Error()
+    //   failures.push(failure)
+    // }
   }
 
   return { changes, failures }
@@ -169,28 +170,28 @@ async function executeAction(params: ExecuteActionParams) {
       genstuff: params.genstuff,
     }),
   )
-    .then((result) => ({
-      type: params.config?.type,
-      path:
-        result &&
-        (typeof result === "string"
-          ? result
-          : "data" in result && result.data
-            ? result.data
-            : JSON.stringify(result)),
-    }))
-    .catch((error) => {
-      throw {
-        type: params.config?.type,
-        path: "",
-        error: error.message || error.toString(),
-      }
-    })
-    .finally(() => {
-      for (var key of configDataKeys) {
-        params.ctx[key] = undefined
-      }
-    })
+  // .then((result) => ({
+  //   type: params.config?.type,
+  //   path:
+  //     result &&
+  //     (typeof result === "string"
+  //       ? result
+  //       : "data" in result && result.data
+  //         ? result.data
+  //         : JSON.stringify(result)),
+  // }))
+  // .catch((error) => {
+  //   throw {
+  //     type: params.config?.type,
+  //     path: "",
+  //     error: error.message || error.toString(),
+  //   }
+  // })
+  // .finally(() => {
+  //   for (var key of configDataKeys) {
+  //     params.ctx[key] = undefined
+  //   }
+  // })
 }
 
 export {

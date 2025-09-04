@@ -1,52 +1,49 @@
 import { access, readFile } from "node:fs/promises"
 import type { RunGeneratorActionFn } from "../core/runner.js"
-import type { Template } from "../types/action.types.js"
 import { writeFile } from "node:fs/promises"
 import { deleteAsync } from "del"
 import { mkdirp } from "mkdirp"
 import path from "node:path"
 
-type WriteActionConfig = Template & { path: string } & { data?: any } & {
+type WriteActionConfig = {
+  templatePath: string
+  data?: any
+  destination: string
   writeMode?: "skip-if-exists" | "force"
 }
-// | (Template & { config: string })
-// | (Templates & { destination: string; path: string })
-// | (Templates & { destination: string; config: string });
 
 export function write(config: WriteActionConfig): RunGeneratorActionFn {
   return async (params) => {
-    const template =
-      config.templateString ?? (await readFile(config.templateFile)).toString()
+    await mkdirp(path.dirname(config.destination))
+
+    const template = (await readFile(config.templatePath)).toString()
 
     const rendered = params.genstuff.renderString({
       data: config.data,
       template: template,
     })
 
-    const isFileExist = await fileExists(config.path)
+    const isFileExist = await fileExists(config.destination)
 
     if (isFileExist && config.writeMode === "force") {
-      await deleteAsync([config.path], { force: true })
+      await deleteAsync([config.destination], { force: true })
     }
 
-    // we can't create files where one already exists
     if (isFileExist) {
       if (config.writeMode === "skip-if-exists") {
-        console.info(`[SKIPPED] ${config.path} (exists)`)
+        console.info(`[SKIPPED] ${config.destination} (exists)`)
         return
       }
 
-      throw `File already exists\n -> ${config.path}`
+      throw `File already exists\n -> ${config.destination}`
     }
 
-    await mkdirp(path.dirname(config.path))
-
-    await writeFile(config.path, rendered)
+    await writeFile(config.destination, rendered)
   }
 }
 
-function fileExists(path: string) {
-  return access(path).then(
+function fileExists(destination: string) {
+  return access(destination).then(
     () => true,
     () => false,
   )

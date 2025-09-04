@@ -6,8 +6,10 @@ export type GeneratorType = {
   name: string
   description?: string
   actions: RunGeneratorActionFn[]
+  initContext?: () => Record<string, any>
 }
 
 export type Config = {
   generators: GeneratorType[]
+  initContext?: () => Record<string, any>
 }

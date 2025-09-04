@@ -6,7 +6,6 @@ import handlebars from "handlebars"
 import { helpers } from "./default-helpers.js"
 
 type SetterScope = "generator" | "helper" | "partial" | "action"
-
 type SetOptions = { override?: boolean }
 type Name = { name: string }
 

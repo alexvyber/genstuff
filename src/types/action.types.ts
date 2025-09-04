@@ -32,9 +32,9 @@ export type DefineActionFunciton<Conifg extends object> = (
   config: Conifg & ActionConfig,
 ) => ActionFunction
 
-export type Template =
-  | { templateString: string; templateFile?: never }
-  | { templateString?: never; templateFile: string }
-export type Templates =
-  | { templates: string[]; files?: never }
-  | { templates?: never; files: string[] }
+// export type Template = { templatePath: string }
+// | { templateString: string; templatePath?: never }
+// | { templateString?: never; templatePath: string }
+// export type Templates =
+//   | { templates: string[]; files?: never }
+//   | { templates?: never; files: string[] }

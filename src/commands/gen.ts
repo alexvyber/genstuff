@@ -1,7 +1,8 @@
 import { Command } from "@oclif/core"
 
 import { loadConfig } from "c12"
-import { run__TODO_chooseBetterName } from "../lib/utils.js"
+import { runFirstGenerator } from "../lib/utils.js"
+import * as v from "valibot"
 
 export default class Gen extends Command {
   static override description = "describe the command here"
@@ -15,6 +16,23 @@ export default class Gen extends Command {
 
     const config = await loadConfig({ name: "genstuff" })
 
-    await run__TODO_chooseBetterName(config.config.generators)
+    await runFirstGenerator(validateConfig(config.config))
   }
+}
+
+function validateConfig(config: unknown) {
+  const schema = v.object({
+    name: v.string(),
+    description: v.optional(v.string()),
+    initContext: v.optional(v.any()),
+    generators: v.array(
+      v.object({
+        name: v.string(),
+        initContext: v.optional(v.any()),
+        actions: v.array(v.any()),
+      }),
+    ),
+  })
+
+  return v.parse(schema, config)
 }

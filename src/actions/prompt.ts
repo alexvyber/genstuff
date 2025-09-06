@@ -10,6 +10,9 @@ export function prompt(
       Object.assign(params.ctx, { answers: {} })
     }
     for (const [key, value] of Object.entries(answers)) {
+      if (!value) {
+        continue
+      }
       Object.assign(params.ctx.answers, { [key]: value })
     }
   }

@@ -19,9 +19,7 @@ export async function runFirstGenerator(
   if (config.generators.length === 1) {
     const generator = config.generators[0]
     await runGeneratorActions({
-      ctx:
-        merge(generator.initContext?.() ?? {}, config.initContext?.() ?? {}) ??
-        {},
+      ctx: merge(generator.initContext?.() ?? {}, config.initContext?.() ?? {}),
       genstuff: genstuff,
       generator: config.generators[0],
     })
@@ -55,7 +53,10 @@ export async function runFirstGenerator(
         }
 
         await runGeneratorActions({
-          ctx: config.initContext?.() ?? {},
+          ctx: merge(
+            generator.initContext?.() ?? {},
+            config.initContext?.() ?? {},
+          ),
           genstuff: genstuff,
           generator,
         })

@@ -22,8 +22,6 @@ export default class Gen extends Command {
 
 function validateConfig(config: unknown) {
   const schema = v.object({
-    name: v.string(),
-    description: v.optional(v.string()),
     initContext: v.optional(v.any()),
     generators: v.array(
       v.object({

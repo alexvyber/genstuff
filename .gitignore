@@ -13,3 +13,5 @@ package-lock.json
 
 
 tsconfig.tsbuildinfo
+
+run.ts

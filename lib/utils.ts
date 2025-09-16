@@ -14,7 +14,7 @@ type Config = {
 
 export async function runGenerator(
   config_: unknown,
-  // message = defaultChoosingMessage,
+  initContext: () => Record<string, unknown>,
 ): Promise<void> {
   const config = validateConfig(config_) as Config
   const genstuff = new Genstuff()
@@ -22,7 +22,7 @@ export async function runGenerator(
   if (config.generators.length === 1) {
     const generator = config.generators[0]
     await run({
-      ctx: merge(generator.initContext?.() ?? {}, config.initContext?.() ?? {}),
+      ctx: merge(merge(initContext?.() ?? {}, generator.initContext?.() ?? {}), config.initContext?.() ?? {}),
       genstuff: genstuff,
       generator: config.generators[0],
     })
@@ -64,7 +64,7 @@ export async function runGenerator(
         }
 
         await run({
-          ctx: merge(generator.initContext?.() ?? {}, config.initContext?.() ?? {}),
+          ctx: merge(merge(initContext?.() ?? {}, generator.initContext?.() ?? {}), config.initContext?.() ?? {}),
           genstuff: genstuff,
           generator,
         })

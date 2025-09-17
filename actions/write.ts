@@ -4,7 +4,7 @@ import { writeFile } from "node:fs/promises"
 import { deleteAsync } from "del"
 import { mkdirp } from "mkdirp"
 
-import { dirname } from "@std/path"
+import { dirname } from "jsr:@std/path"
 
 import type { Action } from "../types.ts"
 
@@ -21,7 +21,7 @@ export function write( config: WriteActionConfig ): Action {
 
     const template = ( await readFile( config.templatePath ) ).toString()
 
-    const rendered = params.genstuff.renderString( { data: config.data ?? {}, template: template } )
+    const rendered = params.renderer.renderString( { data: config.data ?? {}, template: template } )
 
     const isFileExist = await fileExists( config.destination )
 

@@ -122,10 +122,12 @@ export class Renderer {
     template: string
     data: Record<string, unknown>
   } ): string {
+    // TODO: do this once
     for ( const [ name, helper ] of Object.entries( this.#helpers ) ) {
       handlebars.registerHelper( name, helper )
     }
 
+    // TODO: do this once
     for ( const [ name, partial ] of Object.entries( this.#partials ) ) {
       handlebars.registerPartial( name, partial )
     }

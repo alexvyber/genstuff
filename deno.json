@@ -1,7 +1,7 @@
 {
   "name": "@codeandmoney/genstuff",
   "version": "0.0.2",
-  "description": "Genstuff",
+  "description": "Renderer",
   "fmt": {
     "semiColons": false,
     "trailingCommas": "onlyMultiLine",

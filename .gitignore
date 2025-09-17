@@ -7,6 +7,4 @@
 /node_modules
 oclif.manifest.json
 
-
-
-
+*.dev.ts

@@ -5,25 +5,25 @@
 import { get, set } from "@es-toolkit/es-toolkit/compat"
 import handlebars from "handlebars"
 
-import type { GeneratorConfig, HelperFn } from "./types.ts"
+import type { HelperFn } from "./types.ts"
 import { readonly, textHelpers } from "./lib.ts"
 
-type SetterScope = "generator" | "helper" | "partial" //| "action"
+type SetterScope = "helper" | "partial" // | "generator"  | "action"
 type SetOptions = { override?: boolean }
 type Name = { name: string }
 
 type MappingScope = {
-  generator: GeneratorConfig
+  // generator: GeneratorConfig
+  // action: Name & { target: ActionFunction }
   helper: Name & { target: HelperFn }
   partial: Name & { target: string }
-  // action: Name & { target: ActionFunction }
 }
 
 type Mapping = {
-  generator: GeneratorConfig
+  // generator: GeneratorConfig
+  // action: ActionFunction
   helper: HelperFn
   partial: string
-  // action: ActionFunction
 }
 
 type GetSetterType<Key extends SetterScope> = Mapping[Key]
@@ -32,43 +32,31 @@ type Setter<T extends SetterScope> = { target: GetSetterType<T>; name: string }
 
 type GetReturnType<T extends SetterScope> = Mapping[T]
 
-export class Genstuff {
-  #generators: Record<string, any> = {}
-
-  #partials: Record<string, string> = {}
-
-  #helpers: Record<string, any> = textHelpers
-
+export class Renderer {
+  // #generators: Record<string, any> = {}
   // #actions: Record<string, ( ...args: any[] ) => any> = {}
 
-  readonly generators: Record<string, any> = readonly( this.#generators )
+  #partials: Record<string, string> = {}
+  #helpers: Record<string, any> = textHelpers
+
+  // readonly generators: Record<string, any> = readonly( this.#generators )
+  // readonly actions: Record<string, ( ...args: any[] ) => any> = readonly( this.#actions )
 
   readonly partials: Record<string, string> = readonly( this.#partials )
-
   readonly helpers: Record<string, any> = readonly( this.#helpers )
 
-  // readonly actions: Record<string, ( ...args: any[] ) => any> = readonly(
-  //   this.#actions,
-  // )
-
   #mapping: {
-    generator: Record<string, any>
+    // generator: Record<string, any>
+    // action: Record<string, ( ...args: any[] ) => any>
 
     partial: Record<string, string>
-
     helper: Record<string, any>
-    // action: Record<string, ( ...args: any[] ) => any>
   } = {
-    generator: this.#generators,
+    // generator: this.#generators,
+    // action: this.#actions,
+
     partial: this.#partials,
     helper: this.#helpers,
-    // action: this.#actions,
-  }
-
-  welcomeMessage: string = "Genstuff welcome message"
-
-  getWelcomeMessage(): string {
-    return this.welcomeMessage
   }
 
   get<T extends SetterScope>( scope: T, name: string ): GetReturnType<T> {
@@ -97,6 +85,9 @@ export class Genstuff {
     }
 
     switch ( scope ) {
+      // case "generators":
+      //   return Object.entries( target ).map( ( [ name, value ] ) => ( { ...( value as any ).target, name } ) )
+
       // case "actions":
       //   return Object.entries( target ).map( ( [ name, action ] ) => ( { name, action } ) ) as any
 
@@ -106,39 +97,24 @@ export class Genstuff {
       case "partials":
         return Object.entries( target ).map( ( [ name, partial ] ) => ( { name, partial } ) ) as any
 
-      case "generators":
-        return Object.entries( target ).map( ( [ name, value ] ) => ( { ...( value as any ).target, name } ) )
-
       default:
         throw new Error( "can't find the scope" )
     }
   }
 
-  getGenstuffFilePath(): string {
-    return Deno.cwd()
-  }
+  // setGenerator( name: string, generator: GeneratorConfig, options?: SetOptions ): Renderer {
+  //   return this.set( "generator", { target: generator, name }, options )
+  // }
 
-  setGenerator(
-    name: string,
-    generator: GeneratorConfig,
-    options?: SetOptions,
-  ): Genstuff {
-    return this.set( "generator", { target: generator, name }, options )
-  }
-
-  // setAction(
-  //   name: string,
-  //   action: ActionFunction,
-  //   options?: SetOptions,
-  // ): Genstuff {
+  // setAction( name: string, action: ActionFunction, options?: SetOptions ): Renderer {
   //   return this.set( "action", { target: action, name }, options )
   // }
 
-  setPartial( name: string, partial: string, options?: SetOptions ): Genstuff {
+  setPartial( name: string, partial: string, options?: SetOptions ): Renderer {
     return this.set( "partial", { target: partial, name }, options )
   }
 
-  setHelper( name: string, helper: HelperFn, options?: SetOptions ): Genstuff {
+  setHelper( name: string, helper: HelperFn, options?: SetOptions ): Renderer {
     return this.set( "helper", { target: helper, name }, options )
   }
 
@@ -163,7 +139,7 @@ export class Genstuff {
     scope: T,
     config: Setter<T>,
     options?: SetOptions,
-  ): Genstuff {
+  ): Renderer {
     if ( !config.name ) {
       throw new Error( "Name must be non-empty string" )
     }

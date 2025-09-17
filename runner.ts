@@ -1,12 +1,11 @@
-import { assert } from "@std/assert"
-import { Genstuff } from "./genstuff.ts"
+import { assert } from "jsr:@std/assert"
+import { Renderer } from "./renderer.ts"
 import { prompt } from "./actions/prompt.ts"
-import { merge } from "@es-toolkit/es-toolkit"
 import * as v from "@valibot/valibot"
 
-import type { Action, ExecuteActionParams, GeneratorParams } from "./types.ts"
+import type { Action, Config, ExecuteActionParams, GeneratorParams } from "./types.ts"
 
-async function runGenerator( { context, generator, genstuff }: GeneratorParams ): Promise<void> {
+async function runGenerator( { context, generator, renderer }: GeneratorParams ): Promise<void> {
   if ( !generator.actions ) {
     throw Error( `${generator.name} has no actions` )
   }
@@ -16,29 +15,29 @@ async function runGenerator( { context, generator, genstuff }: GeneratorParams )
   }
 
   for ( const action of generator.actions ) {
-    await executeAction( { action, context, genstuff } )
+    await executeAction( { action, context, renderer } )
   }
 }
 
-async function executeAction( { action, context, genstuff }: ExecuteActionParams ): Promise<void | Action | Action[]> {
-  const executed = await action( { context, genstuff } )
+async function executeAction( { action, context, renderer }: ExecuteActionParams ): Promise<void | Action | Action[]> {
+  const executed = await action( { context, renderer } )
 
   if ( !executed ) {
     return undefined
   }
 
-  return await rec( executed, { context, genstuff } )
+  return await execRecursive( executed, { context, renderer } )
 }
 
-async function rec(
+async function execRecursive(
   executed: Action | Action[],
-  { context, genstuff }: Omit<ExecuteActionParams, "action">,
+  { context, renderer }: Omit<ExecuteActionParams, "action">,
 ): Promise<Action | Action[] | void> {
   if ( Array.isArray( executed ) ) {
     const executionResults: (Action)[] = []
 
     for ( const action of executed ) {
-      const result = await executeAction( { action, context, genstuff } )
+      const result = await executeAction( { action, context, renderer } )
 
       if ( result ) {
         if ( Array.isArray( result ) ) {
@@ -53,7 +52,7 @@ async function rec(
   }
 
   if ( typeof executed === "function" ) {
-    return await executeAction( { action: executed, context, genstuff } )
+    return await executeAction( { action: executed, context, renderer } )
   }
 
   assert( !executed )
@@ -61,84 +60,58 @@ async function rec(
   return undefined
 }
 
-export async function run( config_: unknown ): Promise<void> {
+export async function run( config_: Config ): Promise<void> {
   const config = v.parse(
     v.object( {
-      initContext: v.optional( v.any() ),
-      generators: v.array(
-        v.object( {
-          name: v.string(),
-          description: v.optional( v.string() ),
-          initContext: v.optional( v.any() ),
-          actions: v.array( v.any() ),
-        } ),
+      generators: v.pipe(
+        v.array(
+          v.object( {
+            name: v.string(),
+            description: v.optional( v.string() ),
+            actions: v.pipe( v.array( v.any() ), v.minLength( 1 ) ),
+          } ),
+        ),
+        v.minLength( 1 ),
       ),
     } ),
     config_,
   )
 
-  const genstuff = new Genstuff()
+  const renderer = new Renderer()
 
   if ( config.generators.length === 1 ) {
-    const generator = config.generators[0]
-
-    await runGenerator( {
-      context: merge(
-        { errors: [], answers: {} },
-        merge( merge( {}, generator.initContext?.() ?? {} ), config.initContext?.() ?? {} ),
-      ),
-      genstuff: genstuff,
+    return await runGenerator( {
+      context: { errors: [], answers: {} },
+      renderer,
       generator: config.generators[0],
     } )
-
-    return
   }
 
-  genstuff.setGenerator( "choose", {
-    name: "choose",
-    actions: [
-      prompt( [
-        {
-          type: "select",
-          choices: config.generators.map( ( { name, description } ) => ( { name, hint: description } ) ),
-          message: "select",
-          name: "generator",
-        },
-      ] ),
-
-      async ( params ) => {
-        const hasGenerator = params?.context?.answers &&
-          typeof params?.context?.answers === "object" &&
-          "generator" in params?.context?.answers
-
-        if ( !hasGenerator ) {
-          throw new Error( "No generators provided" )
-        }
-
-        const generatorName = v.parse( v.string(), params?.context?.answers.generator )
-
-        const generator = config.generators.find( ( generator ) => generator.name === generatorName )
-
-        if ( !generator ) {
-          console.error( "No generator found" )
-          Deno.exit( 1 )
-        }
-
-        await runGenerator( {
-          context: merge(
-            { errors: [], answers: {} },
-            merge( merge( {}, generator.initContext?.() ?? {} ), config.initContext?.() ?? {} ),
-          ),
-          genstuff: genstuff,
-          generator,
-        } )
-      },
-    ],
-  } )
-
-  await runGenerator( {
+  return await runGenerator( {
     context: { errors: [], answers: {} },
-    genstuff: genstuff,
-    generator: genstuff.get( "generator", "choose" ),
+    renderer,
+    generator: {
+      name: "select",
+      actions: [
+        prompt( [
+          {
+            type: "select",
+            choices: config.generators.map( ( { name, description } ) => ( { name, hint: description } ) ),
+            message: "select",
+            name: "generator",
+          },
+        ] ),
+
+        async ( params ) => {
+          const generatorName = v.parse( v.pipe( v.string(), v.minLength( 1 ) ), params?.context?.answers?.generator )
+
+          const generator = config.generators.find( ( generator ) => generator.name === generatorName )
+
+          assert( generator )
+
+          return await runGenerator( { context: { errors: [], answers: {} }, renderer, generator } )
+        },
+      ],
+    },
   } )
 }

@@ -10,6 +10,7 @@ export { use } from "./actions/use.ts"
 export { prompt } from "./actions/prompt.ts"
 export { write } from "./actions/write.ts"
 export { validateAnswers } from "./actions/validate_answers.ts"
+export { loadTemplates } from "./actions/load_templates.ts"
 
 // Helpers
 export { textHelpers } from "./lib.ts"

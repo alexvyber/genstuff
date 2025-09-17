@@ -1,26 +1,34 @@
-import type { Genstuff } from "./genstuff.ts"
+import type { Renderer } from "./renderer.ts"
 
-type Context = {
+export type Context = {
   answers: Record<string, string | number | boolean | (string | number | boolean)[]>
   errors: Error[]
 } & Record<string, unknown>
 
+export type DeepReadonly<T> = {
+  readonly [Key in keyof T]:
+    // deno-lint-ignore no-explicit-any
+    T[Key] extends any[] ? T[Key]
+      : T[Key] extends object ? DeepReadonly<T[Key]>
+      : T[Key]
+}
+
 export type GeneratorParams = {
   context: Context
-  genstuff: Genstuff
+  renderer: Renderer
   generator: GeneratorConfig
   hooks?: ActionHooks
 }
 
 export type ActionParams = {
   context: Context
-  genstuff: Genstuff
+  renderer: Renderer
   hooks?: ActionHooks
 }
 
 export type ExecuteActionParams = {
   context: Context
-  genstuff: Genstuff
+  renderer: Renderer
   action: Action
 }
 

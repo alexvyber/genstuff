@@ -1,12 +1,13 @@
 import type { Action, Context } from "../types.ts"
+import type { WriteActionConfig } from "./write.ts"
 
 export function renderTemplate( { fullpath, template, getData, saveFn }: {
   template: string
   fullpath: string
   getData?: ( ctx: Context ) => Record<string, unknown>
-  saveFn?: ( params: { fullpath: string; content: string } ) => void | Promise<void>
+  saveFn?: ( config: WriteActionConfig ) => Action
 } ): Action {
-  return async function execute( params ) {
+  return function execute( params ) {
     const renderedTemplate = params.renderer.renderString( {
       template,
       data: getData?.( params.context ) ?? params.context,
@@ -18,7 +19,7 @@ export function renderTemplate( { fullpath, template, getData, saveFn }: {
     } )
 
     if ( saveFn ) {
-      await saveFn( { content: renderedTemplate, fullpath: renderedPath } )
+      return saveFn( { content: renderedTemplate, destination: renderedPath } )
     }
   }
 }

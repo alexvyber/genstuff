@@ -1,18 +1,13 @@
 import { assert } from "jsr:@std/assert"
 import { Renderer } from "./renderer.ts"
-import { prompt } from "./actions/prompt.ts"
 import * as v from "@valibot/valibot"
 
 import type { Action, Config, ExecuteActionParams, GeneratorParams } from "./types.ts"
+import { selectGenerator } from "./actions/select_generator.ts"
 
-async function runGenerator( { context, generator, renderer }: GeneratorParams ): Promise<void> {
-  if ( !generator.actions ) {
-    throw Error( `${generator.name} has no actions` )
-  }
-
-  if ( !Array.isArray( generator.actions ) ) {
-    throw new Error( "Provided actions are invalid" )
-  }
+export async function runGenerator( { context, generator, renderer }: GeneratorParams ): Promise<void> {
+  assert( generator )
+  assert( Array.isArray( generator.actions ) && generator.actions.length > 0 )
 
   for ( const action of generator.actions ) {
     await executeAction( { action, context, renderer } )
@@ -60,54 +55,37 @@ async function execRecursive(
   return undefined
 }
 
-export async function run( config_: Config ): Promise<void> {
-  const config = v.parse(
-    v.object( {
-      generators: v.pipe(
-        v.array(
-          v.object( {
-            name: v.string(),
-            description: v.optional( v.string() ),
-            actions: v.pipe( v.array( v.any() ), v.minLength( 1 ) ),
-          } ),
-        ),
-        v.minLength( 1 ),
-      ),
-    } ),
-    config_,
-  )
+const ConfigSchema = v.object( {
+  generators: v.pipe(
+    v.array(
+      v.object( {
+        name: v.string(),
+        description: v.optional( v.string() ),
+        actions: v.pipe( v.array( v.any() ), v.minLength( 1 ) ),
+      } ),
+    ),
+    v.minLength( 1 ),
+  ),
+} )
 
-  const renderer = new Renderer()
+export async function run( config_: Config ): Promise<void> {
+  const config = v.parse( ConfigSchema, config_ )
 
   if ( config.generators.length === 1 ) {
     return await runGenerator( {
       context: { errors: [], answers: {} },
-      renderer,
+      renderer: new Renderer(),
       generator: config.generators[0],
     } )
   }
 
   return await runGenerator( {
     context: { errors: [], answers: {} },
-    renderer,
+    renderer: new Renderer(),
     generator: {
       name: "select",
       actions: [
-        function selectGenerator() {
-          const choices = config.generators.map( ( { name, description } ) => ( { name, hint: description } ) )
-
-          return prompt( [ { type: "select", choices, message: "select", name: "generator" } ] )
-        },
-
-        function runSelectedGenerator( params ) {
-          const generatorName = v.parse( v.pipe( v.string(), v.minLength( 1 ) ), params?.context?.answers?.generator )
-
-          const generator = config.generators.find( ( generator ) => generator.name === generatorName )
-
-          assert( generator )
-
-          return runGenerator( { context: { errors: [], answers: {} }, renderer, generator } )
-        },
+        selectGenerator( config ),
       ],
     },
   } )

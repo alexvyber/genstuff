@@ -137,11 +137,7 @@ export class Renderer {
     return compiled( params.data )
   }
 
-  private set<T extends SetterScope>(
-    scope: T,
-    config: Setter<T>,
-    options?: SetOptions,
-  ): Renderer {
+  private set<T extends SetterScope>( scope: T, config: Setter<T>, options?: SetOptions ): Renderer {
     if ( !config.name ) {
       throw new Error( "Name must be non-empty string" )
     }

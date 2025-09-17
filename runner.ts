@@ -1,6 +1,6 @@
-import { assert } from "jsr:@std/assert"
+import { assert } from "@std/assert"
 import { Renderer } from "./renderer.ts"
-import * as v from "@valibot/valibot"
+import * as v from "valibot"
 
 import type { Action, Config, ExecuteActionParams, GeneratorParams } from "./types.ts"
 import { selectGenerator } from "./actions/select_generator.ts"

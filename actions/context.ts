@@ -1,4 +1,4 @@
-import { merge } from "@es-toolkit/es-toolkit"
+import { merge } from "es-toolkit"
 import { readonly } from "../lib.ts"
 import type { Action, Context, DeepReadonly } from "../types.ts"
 

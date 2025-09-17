@@ -2,6 +2,23 @@
   "name": "@codeandmoney/genstuff",
   "version": "0.0.2",
   "description": "Renderer",
+  "homepage": "https://github.com/repos/genstuff",
+  "bugs": "https://github.com/repos/genstuff/issues",
+  "license": "MIT",
+  "author": "Alexey Sokolov",
+  "imports": {
+    "es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.39.10",
+    "@std/assert": "jsr:@std/assert@^1.0.14",
+    "@std/path": "jsr:@std/path@^1.1.2",
+    "valibot": "jsr:@valibot/valibot@^1.1.0",
+    "change-case": "npm:change-case@^5.4.4",
+    "enquirer": "npm:enquirer@^2.4.1",
+    "handlebars": "npm:handlebars@^4.7.8",
+    "title-case": "npm:title-case@^4.3.2"
+  },
+  "exports": {
+    ".": "./mod.ts"
+  },
   "fmt": {
     "semiColons": false,
     "trailingCommas": "onlyMultiLine",
@@ -9,22 +26,5 @@
     "indentWidth": 2,
     "lineWidth": 120,
     "spaceAround": true
-  },
-  "homepage": "https://github.com/repos/genstuff",
-  "bugs": "https://github.com/repos/genstuff/issues",
-  "license": "MIT",
-  "author": "Alexey Sokolov",
-  "exports": {
-    ".": "./mod.ts"
-  },
-  "imports": {
-    "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.39.10",
-    "@valibot/valibot": "jsr:@valibot/valibot@^1.1.0",
-    "change-case": "npm:change-case@^5.4.4",
-    "del": "npm:del@^8.0.0",
-    "enquirer": "npm:enquirer@^2.4.1",
-    "handlebars": "npm:handlebars@^4.7.8",
-    "mkdirp": "npm:mkdirp@^3.0.1",
-    "title-case": "npm:title-case@^4.3.2"
   }
 }

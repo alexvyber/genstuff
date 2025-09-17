@@ -1,5 +1,5 @@
 import type { Action } from "../types.ts"
-import { join, resolve } from "jsr:@std/path"
+import { join, resolve } from "@std/path"
 
 export function loadTemplates( templatesPath: string ): Action {
   return async function execute( params ) {

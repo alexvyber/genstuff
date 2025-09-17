@@ -1,6 +1,6 @@
 import { run } from "./runner.ts"
-import { assert } from "jsr:@std/assert"
-import { join } from "jsr:@std/path"
+import { assert } from "@std/assert"
+import { join } from "@std/path"
 import { blank1, blank2 } from "./actions/blank.ts"
 
 import type { Config, GeneratorConfig } from "./types.ts"
@@ -10,7 +10,7 @@ import { context } from "./actions/context.ts"
 Deno.test("simple", async () => {
   const simple: GeneratorConfig = {
     name: "simple",
-    description: "Some adsfadsf",
+    description: "description",
     actions: [
       blank1,
       blank2,

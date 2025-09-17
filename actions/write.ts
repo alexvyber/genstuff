@@ -1,10 +1,7 @@
 // TODO: get rid of `node:` imports and "del", "mkdirp" libraries
 import { access, readFile } from "node:fs/promises"
-import { writeFile } from "node:fs/promises"
-import { deleteAsync } from "del"
-import { mkdirp } from "mkdirp"
 
-import { dirname } from "jsr:@std/path"
+import { dirname } from "@std/path"
 
 import type { Action } from "../types.ts"
 
@@ -17,7 +14,7 @@ type WriteActionConfig = {
 
 export function write( config: WriteActionConfig ): Action {
   return async ( params ) => {
-    await mkdirp( dirname( config.destination ) )
+    await Deno.mkdir( dirname( config.destination ), { recursive: true } )
 
     const template = ( await readFile( config.templatePath ) ).toString()
 
@@ -26,7 +23,7 @@ export function write( config: WriteActionConfig ): Action {
     const isFileExist = await fileExists( config.destination )
 
     if ( isFileExist && config.writeMode === "force" ) {
-      await deleteAsync( [ config.destination ], { force: true } )
+      await Deno.remove( config.destination, { recursive: true } )
     }
 
     if ( isFileExist ) {
@@ -38,7 +35,7 @@ export function write( config: WriteActionConfig ): Action {
       throw `File already exists\n -> ${config.destination}`
     }
 
-    await writeFile( config.destination, rendered )
+    await Deno.writeFile( config.destination, new TextEncoder().encode( rendered ) )
   }
 }
 

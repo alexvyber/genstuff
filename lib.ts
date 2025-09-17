@@ -15,7 +15,7 @@ import {
   trainCase,
 } from "change-case"
 import { titleCase } from "title-case"
-import { deburr, lowerFirst, startCase, trim } from "@es-toolkit/es-toolkit"
+import { deburr, lowerFirst, startCase, trim } from "es-toolkit"
 
 import type { ActionHooks, ActionHooksChanges, ActionHooksFailures, TextHelpers } from "./types.ts"
 

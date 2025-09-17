@@ -1,5 +1,5 @@
 import type { Action } from "../types.ts"
-import * as v from "@valibot/valibot"
+import * as v from "valibot"
 
 const primitiveSchema = v.union( [ v.pipe( v.string(), v.minLength( 1 ) ), v.boolean(), v.number() ] )
 

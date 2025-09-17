@@ -1,4 +1,4 @@
-import { assert } from "jsr:@std/assert"
+import { assert } from "@std/assert"
 import type { Action, Config } from "../types.ts"
 import { prompt } from "./prompt.ts"
 import { Renderer } from "../renderer.ts"

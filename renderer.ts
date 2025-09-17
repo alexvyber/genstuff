@@ -2,7 +2,7 @@
 
 // deno-lint-ignore-file no-explicit-any
 
-import { get, set } from "@es-toolkit/es-toolkit/compat"
+import { get, set } from "es-toolkit/compat"
 import handlebars from "handlebars"
 
 import type { HelperFn } from "./types.ts"

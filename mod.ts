@@ -14,6 +14,3 @@ export { loadTemplates } from "./actions/load_templates.ts"
 
 // Helpers
 export { textHelpers } from "./lib.ts"
-
-// Types
-export type { Config } from "./types.ts"

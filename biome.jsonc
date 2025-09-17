@@ -19,8 +19,7 @@
       "correctness": {
         "noUnusedVariables": "error"
       },
-      "nursery": {
-      },
+      "nursery": {},
       "suspicious": {
         "noVar": "error"
       }

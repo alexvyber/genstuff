@@ -1,9 +1,12 @@
+// TODO: get rid of `node:` imports and "del", "mkdirp" libraries
 import { access, readFile } from "node:fs/promises"
-import type { Action } from "../types.ts"
 import { writeFile } from "node:fs/promises"
 import { deleteAsync } from "del"
 import { mkdirp } from "mkdirp"
-import path from "node:path"
+
+import { dirname } from "@std/path"
+
+import type { Action } from "../types.ts"
 
 type WriteActionConfig = {
   templatePath: string
@@ -14,7 +17,7 @@ type WriteActionConfig = {
 
 export function write( config: WriteActionConfig ): Action {
   return async ( params ) => {
-    await mkdirp( path.dirname( config.destination ) )
+    await mkdirp( dirname( config.destination ) )
 
     const template = ( await readFile( config.templatePath ) ).toString()
 

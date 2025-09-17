@@ -1,10 +1,9 @@
 import type { Action } from "../types.ts"
 
-type Callback = ( params: unknown ) => Action | Promise<Action>
+// TODO: implement use in a way, that it can use actions from some repository... Maybe...
 
-export function use( callback: Callback ): Action {
-  return async function runAction( params ) {
-    const actionFn = await callback( params )
-    return actionFn( params )
+export function use(): Action {
+  return function execute( _params ) {
+    throw new Error( "Action is not implemented" )
   }
 }

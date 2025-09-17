@@ -1,8 +1,18 @@
-export type { RunGeneratorActionFn, RunGeneratorActionsParams } from "./core/runner.ts"
-export type { Config } from "./types/types.ts"
+// Run
+export { run } from "./runner.ts"
 
-export { helpers as textHelpers } from "./core/default-helpers.ts"
+// Actions
+export { ai } from "./actions/ai.ts"
+export { answer } from "./actions/answer.ts"
+export { config } from "./actions/config.ts"
+export { modify } from "./actions/modify.ts"
+export { use } from "./actions/use.ts"
+export { prompt } from "./actions/prompt.ts"
+export { write } from "./actions/write.ts"
+export { validateAnswers } from "./actions/validate_answers.ts"
 
-export { run } from "./core/runner.ts"
-export { runGenerator } from "./lib/utils.ts"
-export * from "./actions/index.ts"
+// Helpers
+export { textHelpers } from "./lib.ts"
+
+// Types
+export type { Config } from "./types.ts"

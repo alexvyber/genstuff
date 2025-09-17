@@ -1,10 +1,14 @@
 {
   "name": "@codeandmoney/genstuff",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Genstuff",
   "fmt": {
+    "semiColons": false,
+    "trailingCommas": "onlyMultiLine",
+    "quoteProps": "asNeeded",
+    "indentWidth": 2,
     "lineWidth": 120,
-    "semiColons": false
+    "spaceAround": true
   },
   "homepage": "https://github.com/repos/genstuff",
   "bugs": "https://github.com/repos/genstuff/issues",
@@ -15,20 +19,12 @@
   },
   "imports": {
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.39.10",
-    "@oclif/core": "npm:@oclif/core@^4.5.3",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.1.0",
-    "c12": "npm:c12@^3.3.0",
     "change-case": "npm:change-case@^5.4.4",
     "del": "npm:del@^8.0.0",
     "enquirer": "npm:enquirer@^2.4.1",
     "handlebars": "npm:handlebars@^4.7.8",
-    "isbinaryfile": "npm:isbinaryfile@^5.0.6",
     "mkdirp": "npm:mkdirp@^3.0.1",
-    "ora": "npm:ora@^9.0.0",
     "title-case": "npm:title-case@^4.3.2"
-  },
-  "compilerOptions": {
-    "module": "nodenext",
-    "strict": true
   }
 }

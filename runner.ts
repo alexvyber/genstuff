@@ -14,7 +14,9 @@ export async function runGenerator( { context, generator, renderer }: GeneratorP
   }
 }
 
-async function executeAction( { action, context, renderer }: ExecuteActionParams ): Promise<void | Action | Action[]> {
+export async function executeAction(
+  { action, context, renderer }: ExecuteActionParams,
+): Promise<void | Action | Action[]> {
   const executed = await action( { context, renderer } )
 
   if ( !executed ) {

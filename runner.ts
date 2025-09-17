@@ -93,23 +93,20 @@ export async function run( config_: Config ): Promise<void> {
     generator: {
       name: "select",
       actions: [
-        prompt( [
-          {
-            type: "select",
-            choices: config.generators.map( ( { name, description } ) => ( { name, hint: description } ) ),
-            message: "select",
-            name: "generator",
-          },
-        ] ),
+        function selectGenerator() {
+          const choices = config.generators.map( ( { name, description } ) => ( { name, hint: description } ) )
 
-        async ( params ) => {
+          return prompt( [ { type: "select", choices, message: "select", name: "generator" } ] )
+        },
+
+        function runSelectedGenerator( params ) {
           const generatorName = v.parse( v.pipe( v.string(), v.minLength( 1 ) ), params?.context?.answers?.generator )
 
           const generator = config.generators.find( ( generator ) => generator.name === generatorName )
 
           assert( generator )
 
-          return await runGenerator( { context: { errors: [], answers: {} }, renderer, generator } )
+          return runGenerator( { context: { errors: [], answers: {} }, renderer, generator } )
         },
       ],
     },

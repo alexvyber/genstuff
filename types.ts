@@ -1,5 +1,9 @@
 import type { Renderer } from "./renderer.ts"
 
+export type Config = {
+  generators: GeneratorConfig[]
+}
+
 export type Context = {
   answers: Record<string, string | number | boolean | (string | number | boolean)[]>
   errors: Error[]
@@ -38,10 +42,6 @@ export type GeneratorConfig = {
   description?: string // | (( params: unknown ) => string)
   // TODO: implement commented out interface
   actions: Action[] // | Promise<Action[]>  | (( params: unknown ) => Action[] | Promise<Action[]>)
-}
-
-export type Config = {
-  generators: GeneratorConfig[]
 }
 
 export type TextHelpers = Record<string, HelperFn>

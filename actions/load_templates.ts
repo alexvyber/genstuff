@@ -1,13 +1,16 @@
 import type { Action } from "../types.ts"
-import { join, resolve } from "@std/path"
+import { join, relative, resolve } from "@std/path"
 
 export function loadTemplates( templatesPath: string ): Action {
   return async function execute( params ) {
-    const templates: Map<string, string> = new Map()
+    const templates: Map<string, { fullPath: string; realativePath: string; content: string }> = new Map()
 
-    for await ( const file of walkDir( templatesPath ) ) {
-      const contentRaw = await Deno.readFile( resolve( templatesPath, file ) )
-      templates.set( file, new TextDecoder().decode( contentRaw ) )
+    for await ( const fullPath of walkDir( templatesPath ) ) {
+      const realativePath = relative( templatesPath, fullPath )
+
+      const contentRaw = await Deno.readFile( resolve( templatesPath, fullPath ) )
+
+      templates.set( realativePath, { content: new TextDecoder().decode( contentRaw ), fullPath, realativePath } )
     }
 
     Object.assign( params.context, { templates } )

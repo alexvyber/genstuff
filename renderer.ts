@@ -118,10 +118,7 @@ export class Renderer {
     return this.set( "helper", { target: helper, name }, options )
   }
 
-  renderString( params: {
-    template: string
-    data: Record<string, unknown>
-  } ): string {
+  renderString( params: { template: string; data: Record<string, unknown> } ): string {
     // TODO: do this once
     for ( const [ name, helper ] of Object.entries( this.#helpers ) ) {
       handlebars.registerHelper( name, helper )

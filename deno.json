@@ -1,6 +1,6 @@
 {
   "name": "@codeandmoney/genstuff",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Renderer",
   "homepage": "https://github.com/repos/genstuff",
   "bugs": "https://github.com/repos/genstuff/issues",
@@ -18,7 +18,8 @@
   },
   "exports": {
     ".": "./mod.ts",
-    "./types": "./types.ts"
+    "./types": "./types.ts",
+    "./actions": "./actions/exports.ts"
   },
   "fmt": {
     "semiColons": false,

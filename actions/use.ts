@@ -1,12 +1,10 @@
-import type { RunGeneratorActionFn, RunGeneratorActionsParams } from "../core/runner.ts"
+import type { Action } from "../types.ts"
 
-export function use(
-  callback: (
-    params: RunGeneratorActionsParams,
-  ) => Promise<RunGeneratorActionFn>,
-): RunGeneratorActionFn {
-  return async function runAction(params) {
-    const actionFn = await callback(params)
-    return actionFn(params)
+type Callback = ( params: unknown ) => Action | Promise<Action>
+
+export function use( callback: Callback ): Action {
+  return async function runAction( params ) {
+    const actionFn = await callback( params )
+    return actionFn( params )
   }
 }
